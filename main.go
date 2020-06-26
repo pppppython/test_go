@@ -10,8 +10,12 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var clients = make(map[*websocket.Conn]bool) // 连接的客户端
+var clients = make(map[*websocket.Conn]bool) // 连接的客户端，是一个集合
 var broadcast = make(chan string)            // 广播通道
+var a string
+var rr = make([]byte, 100)
+
+var ch2 = make(chan []byte)
 
 // 配置升级http协议
 var upgrader = websocket.Upgrader{
@@ -20,14 +24,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-/*
-// Define our message object
-type Message struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Message  string `json:"message"`
-}*/
-
+//主线程
 func main() {
 
 	go geet() //开启一个goroutine，连接TCP服务器
@@ -61,31 +58,50 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	// 注册新客户端
 	clients[ws] = true
-	/*
-		for {
-			var msg Message
-			// 以JSON形式读入新消息并将其映射到消息对象
-			err := ws.ReadJSON(&msg)
+
+	for {
+		time.Sleep(time.Duration(100) * time.Millisecond)
+		// 以JSON形式读入新消息并将其映射到消息对象a
+		/*
+			err := ws.ReadJSON(&a)
+			fmt.Println(a)
 			if err != nil {
 				log.Printf("error: %v", err)
 				delete(clients, ws)
 				break
+
+		*/
+
+		//rr := make([]byte, 10)
+		for client := range clients {
+			_, rr, err := client.ReadMessage()
+			ss := string(rr[:40])
+			fmt.Println(ss)
+			ch2 <- rr //将前端传来的消息传入ch2通道
+			if err != nil {
+				//log.Printf("error: %v", err)
+				//delete(clients, ws)
+				//break
 			}
-			// 将新接收到的消息发送到广播频道
-			broadcast <- msg
-		}*/
+		}
+
+		// 将新接收到的消息发送到广播频道
+		//broadcast <- msg
+	}
 }
 
 func handleMessages() {
 	for {
+		time.Sleep(time.Duration(100) * time.Millisecond)
 		// 从广播频道获取下一条消息
 		msg := <-broadcast
 		//将其发送到当前连接的每个客户端
 		for client := range clients {
 			err := client.WriteJSON(msg)
 			if err != nil {
-				log.Printf("error: %v", err)
+				//log.Printf("error: %v", err)
 				client.Close()
+
 				delete(clients, client)
 			}
 		}
@@ -101,11 +117,23 @@ func geet() {
 		fmt.Println("Resolve TCPAddr error", err)
 	}
 	conn, err := net.DialTCP("tcp4", nil, tcpAddr)
+
 	defer conn.Close()
 	if err != nil {
 		fmt.Println("连接tcp服务器出错", err)
 	}
-	buffer := make([]byte, 4096)
+
+	go func() {
+		for {
+			time.Sleep(time.Duration(100) * time.Millisecond)
+			pp := <-ch2
+			pk := string(pp[:49])
+			fmt.Println(pk)
+			conn.Write(pp) //向tcp服务器发送数据
+		}
+	}()
+
+	buffer := make([]byte, 49)
 
 	for {
 		//time.Sleep(1 * time.Second)
@@ -113,10 +141,11 @@ func geet() {
 
 		conn.Read(buffer) //读取TCP发来的数据
 
-		kk := string(buffer[:58])
-		fmt.Println(kk)
+		kk := string(buffer[:49])
+		fmt.Println(len(kk))
 		// 将新接收到的消息发送到广播频道
 		broadcast <- kk
+
 	}
 
 }
