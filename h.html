@@ -13,37 +13,53 @@
 
 <body>
 <div style="margin-left:50px">
-    <h3>web上位机测试</h3>
-    <div style="border:1px solid;width: 1300px;height: 200px;">
+    <h2>web上位机测试</h2>
+    <h4>收到的实时数据</h4>
+    <div style="border:1px solid;width: 1300px;height: 80px;">
         <div id="msgArea" style="width:100%;height: 100%;overflow-y: scroll"></div>
     </div>
-    <div id="te" style="border:1px solid;width: 600px;height: 150px;">
+    <div style="border:1px solid;width: auto;height: auto;position:absolute;left: 300px;top: 300px;">
+        <button type="button" onclick="pppp()">打开弹窗</button>
+    </div>
+    <h4>控制页面</h4>
+    <div id="te" style="border:1px solid;width: 600px;height: 250px;">
         <p id="te1">春江花月夜</p>
         <p id="te2">春江花月夜</p>
         <p id="te3">春江花月夜</p>
         <p id="te4">春江花月夜</p>
-        <p id="te5">春江花月夜</p>
-        <p id="te6">春江花月夜</p>
-        <p id="te7">春江花月夜</p>
-        <p id="te8">春江花月夜</p>
-        <p id="te9">春江花月夜</p>
+
         
     </div>
-    <div style="border:1px solid;width: 600px;height: 100px;">
+    <h4>输入消息</h4>
+    <div style="border:1px solid;width: 600px;height: 50px;">
         <div style="width:100%;height: 100%;">
-            <textarea id="userMsg" style="width:100%;height: 100%;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></textarea>
+            <input id="userMsg" style="width:100%;height: 100%;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></input>
         </div>
     </div>
     <div style="border:1px solid;width: 600px;height: 25px;">
         <button style="float: right;" onclick="sendMsg()">发送</button>
     </div>
+    <h4>控制测试</h4>
+    
 </div>
+
+<!--一个被隐藏的弹窗-->
+<!--一个被隐藏的弹窗-->
+<!--一个被隐藏的弹窗-->
+<div id="tc" style="display:none;">
+    <p id="te5">你是看不见我的</p>
+    <button type="button" onclick="ppps()">关闭弹窗</button>
+</div>
+
+
+
 </body>
 
 </html>
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script>
     var ws;
+    var arr3
     $(function(){
         link();
     })
@@ -60,6 +76,7 @@
             var msg = "<p>"+date.toLocaleString()+"</p>"+"<p>"+event.data+"</p>";
             $("#msgArea").append(msg);
             var arr3=event.data.split(" ");
+            //arr3=event.data.split(" ");
             arr3.shift()  //删除数组第一个元素
             //arr3.pop();   //删除数组最后一个元素
             document.getElementById("te1").innerHTML =arr3[0]
@@ -67,15 +84,45 @@
             document.getElementById("te3").innerHTML =arr3[2]
             document.getElementById("te4").innerHTML =arr3[3]
             document.getElementById("te5").innerHTML =arr3[4]
-            document.getElementById("te6").innerHTML =arr3[5]
+            
         }
         ws.onclose = function(event){alert("已经与服务器断开连接\r\n当前连接状态："+this.readyState);};
         ws.onerror = function(event){alert("WebSocket异常！");};
     }
     function sendMsg(){
-        document.getElementById("userMsg").value = "";
         var msg = $("#userMsg").val();
-        
         ws.send(msg);
+        $("#userMsg").val("");  //清空输入框的值
+    }
+
+
+    //打开弹窗的函数
+    function pppp(e){
+        //获取当前鼠标位置
+        e = e || window.event;
+        x = e.pageX;
+        y = e.pageY;
+       
+       //$("#tc").attr("style","display:block;");//显示div
+      // $("#tc").css({"position":"absolute","left": "60px","top": "60px"});
+       
+       $("#tc").attr("style","display:block;");//显示div
+       $("#tc").css("background-color","yellow");
+       elem=document.getElementById("tc")
+       elem.style.position="absolute";
+       elem.style.left=x+"px";
+       elem.style.top=y+"px";
+       elem.style.width="200px";
+       elem.style.height="100px";
+       elem.style.border="1px solid";
+      
+        
+        
+    }
+    //关闭弹窗的函数
+    function ppps(){
+        
+       
+        $("#tc").attr("style","display:none;");//显示div
     }
 </script>
