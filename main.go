@@ -136,7 +136,7 @@ func geet() {
 		}
 	}()
 
-	buffer := make([]byte, 49)
+	buffer := make([]byte, 62)
 
 	for {
 		//time.Sleep(1 * time.Second)
@@ -144,7 +144,7 @@ func geet() {
 
 		conn.Read(buffer) //读取TCP发来的数据
 
-		kk := string(buffer[:49])
+		kk := string(buffer[:62])
 		//fmt.Println(len(kk))
 		// 将新接收到的消息发送到广播频道
 		broadcast <- kk
