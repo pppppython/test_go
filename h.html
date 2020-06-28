@@ -18,23 +18,35 @@
     <div style="border:1px solid;width: 1300px;height: 80px;">
         <div id="msgArea" style="width:100%;height: 100%;overflow-y: scroll"></div>
     </div>
-    <div style="border:1px solid;width: auto;height: auto;position:absolute;left: 300px;top: 300px;">
-        <button type="button" onclick="pppp()">打开弹窗0</button>
-        <button type="button" onclick="pppp()">打开弹窗1</button>
+
+    <!--调节阀-->
+    <div style="border:1px solid;width: auto;height: auto;position:absolute;left: 500px;top: 300px;">
+        <button id="te4" onclick="pppp()">te44</button>
+        <button id="te5"  onclick="pppp()">te55</button>
+
     </div>
+
+    <!--开关阀-->
+    <div style="border:1px solid;width: auto;height: auto;position:absolute;left: 600px;top: 300px;">
+        <button id="te6" onclick="pppkg()">te66</button>
+        <button id="te7"  onclick="pppkg()">te77</button>
+
+    </div>
+
+
     <h4>控制页面</h4>
     <div id="te" style="border:1px solid;width: 600px;height: 250px;">
+        <p id="te0">春江花月夜</p>
         <p id="te1">春江花月夜</p>
         <p id="te2">春江花月夜</p>
-        <p id="te3">春江花月夜</p>
-        <p id="te4">春江花月夜</p>
+        
 
         
     </div>
     <h4>输入消息</h4>
     <div style="border:1px solid;width: 600px;height: 50px;">
         <div style="width:100%;height: 100%;">
-            <input id="userMsg" style="width:100%;height: 100%;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></input>
+            <input id="userMsgpp" style="width:100%;height: 100%;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></input>
         </div>
     </div>
     <div style="border:1px solid;width: 600px;height: 25px;">
@@ -47,9 +59,31 @@
 <!--一个被隐藏的弹窗-->
 <!--一个被隐藏的弹窗-->
 <!--一个被隐藏的弹窗-->
+<!--调节阀弹窗-->
 <div id="tc" style="display:none;">
-    <p id="te5">你是看不见我的</p>
-    <button type="button" onclick="ppps()">关闭弹窗</button>
+    <h5 id="gw">阀门开度</h5><p id="tt">你是看不见我的</p>
+    <h5>开度设定</h5><p id="tt1">你是看不见我的</p>
+    
+    <div style="width:100%;height: 100%;">
+        <input id="userMsg" style="width:100%;height: 50px;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></input>
+        <button style="float: right;" onclick="sendMsg()">发送</button>
+        <button type="button" onclick="ppps()">关闭弹窗</button>
+    </div>
+    
+</div>
+
+<!--开关阀弹窗-->
+<div id="botc" style="display:none;">
+    <h5 id="bo">阀门状态</h5>
+    <p id="kvk">你是看不见我的</p>
+    <p id="kvg">你是看不见我的</p>
+    <button style="float: right;" onclick="KsendMsg()">开</button>
+    <button style="float: right;" onclick="gsendMsg()">关</button>
+    
+       
+    <button type="button" onclick="pppsk()">关闭弹窗</button>
+    
+    
 </div>
 
 
@@ -60,7 +94,27 @@
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script>
     var ws;
-    var arr3
+    var arr3;   //用于存储服务器发来的数据的数组
+    
+    //下面这个数组用于储存需要显示实时信息的工位号
+    var cars=new Array()
+    cars[0]="te0"
+    cars[1]="te1"
+    cars[2]="te2"
+
+    //下面这个数组用于调节阀div储存临时变量，用于按钮id和p元素id的还原
+    var ppp=new Array()
+    ppp[1]="tt"
+
+    //下面这个数组用于开关阀div储存临时变量，用于按钮id和p元素id的还原
+    var kkk=new Array()
+    kkk[1]="tt"
+
+    var b=false    //调节阀弹窗标志位
+    var c=false    //开关阀弹窗标志位
+
+
+
     $(function(){
         link();
     })
@@ -80,32 +134,57 @@
             //arr3=event.data.split(" ");
             arr3.shift()  //删除数组第一个元素
             //arr3.pop();   //删除数组最后一个元素
+            /*
             document.getElementById("te1").innerHTML =arr3[0]
             document.getElementById("te2").innerHTML =arr3[1]
             document.getElementById("te3").innerHTML =arr3[2]
             document.getElementById("te4").innerHTML =arr3[3]
             document.getElementById("te5").innerHTML =arr3[4]
+            */
+
+            //cars的数组长度代表需要显示的信号数量
+            for ( var i = 0; i <cars.length; i++){
+          
+                document.getElementById(cars[i]).innerHTML =arr3[i]      
+             }
             
         }
         ws.onclose = function(event){alert("已经与服务器断开连接\r\n当前连接状态："+this.readyState);};
         ws.onerror = function(event){alert("WebSocket异常！");};
     }
+
+    //调节阀发送控制消息的函数
     function sendMsg(){
         var msg = $("#userMsg").val();
-        ws.send(msg);
+        ws.send(ppp[0]+msg);     //ppp[0]是当前工位号
         $("#userMsg").val("");  //清空输入框的值
+        document.getElementById("tt1").innerHTML=msg;
+    }
+
+    //开关阀发送控制消息的函数,开阀门
+    function KsendMsg(){
+        
+        ws.send(kkk[0]+" "+1);     //kkk[0]是当前开关阀工位号
     }
 
 
-    //打开弹窗的函数
+    //开关阀发送控制消息的函数,关阀门
+    function gsendMsg(){
+       
+        ws.send(kkk[0]+" "+0);     //kkk[0]是当前开关阀工位号
+    }
+
+    //打开调节阀弹窗的函数
     function pppp(e){
+
+        //如果布尔弹窗标志位为false，才打开弹窗
+        if (b==false)
+        {
         //获取当前鼠标位置
         e = e || window.event;
         x = e.pageX;
         y = e.pageY;
        
-       //$("#tc").attr("style","display:block;");//显示div
-      // $("#tc").css({"position":"absolute","left": "60px","top": "60px"});
        
        $("#tc").attr("style","display:block;");//显示div
        $("#tc").css("background-color","yellow");
@@ -116,14 +195,114 @@
        elem.style.width="200px";
        elem.style.height="100px";
        elem.style.border="1px solid";
-      
-        
-        
+       $('#test').attr('name');
+       //alert($(e.target).attr('id')); //获取当前按钮的id
+       var ii=$(e.target).attr('id');
+       //ppp.push(ii)   //保存当前按钮的id
+       ppp[0]=ii
+       //document.getElementById($(e.target).attr('id')).setAttribute("id","teeeee");
+       document.getElementById($(e.target).attr('id')).id="freightaccountdo"; //修改按钮id
+       document.getElementById("tt").id=ii;                                   //将<p>的id改为之前按钮的id
+       cars.push(ii)                                                          //向工位数组添加一个工位号
+       document.getElementById("gw").innerHTML=ii+"调节阀";
+       b=true     //打开弹窗后，标志位置为True
+       }
     }
-    //关闭弹窗的函数
+    //关闭调节阀弹窗的函数
     function ppps(){
-        
-       
+        document.getElementById(ppp[0]).id="tt"; //p元素id还原
+        document.getElementById("freightaccountdo").id=String(ppp[0]); //按钮id还原
         $("#tc").attr("style","display:none;");//显示div
+        cars.pop();                   //删除之前工位数组添加的工位号
+        b=false                       //关闭弹窗后，弹窗标志位置为false
     }
+
+
+    //打开调节阀弹窗的函数
+    function pppp(e){
+
+        //如果布尔弹窗标志位为false，才打开弹窗
+        if (b==false)
+        {
+        //获取当前鼠标位置
+        e = e || window.event;
+        x = e.pageX;
+        y = e.pageY;
+       
+       
+       $("#tc").attr("style","display:block;");//显示div
+       $("#tc").css("background-color","yellow");
+       elem=document.getElementById("tc")
+       elem.style.position="absolute";
+       elem.style.left=x+"px";
+       elem.style.top=y+"px";
+       elem.style.width="200px";
+       elem.style.height="100px";
+       elem.style.border="1px solid";
+       $('#test').attr('name');
+       //alert($(e.target).attr('id')); //获取当前按钮的id
+       var ii=$(e.target).attr('id');
+       //ppp.push(ii)   //保存当前按钮的id
+       ppp[0]=ii
+       //document.getElementById($(e.target).attr('id')).setAttribute("id","teeeee");
+       document.getElementById($(e.target).attr('id')).id="freightaccountdo"; //修改按钮id
+       document.getElementById("tt").id=ii;                                   //将<p>的id改为之前按钮的id
+       cars.push(ii)                                                          //向工位数组添加一个工位号
+       document.getElementById("gw").innerHTML=ii+"调节阀";
+       b=true     //打开弹窗后，标志位置为True
+       }
+    }
+    //关闭调节阀弹窗的函数
+    function ppps(){
+        document.getElementById(ppp[0]).id="tt"; //p元素id还原
+        document.getElementById("freightaccountdo").id=String(ppp[0]); //按钮id还原
+        $("#tc").attr("style","display:none;");//显示div
+        cars.pop();                   //删除之前工位数组添加的工位号
+        b=false                       //关闭弹窗后，弹窗标志位置为false
+    }
+
+
+    //打开开关阀弹窗的函数
+    function pppkg(e){
+        //如果布尔弹窗标志位为false，才打开弹窗
+        if (c==false)
+        {
+        //获取当前鼠标位置
+        e = e || window.event;
+        x = e.pageX;
+        y = e.pageY;
+        $("#botc").attr("style","display:block;");//显示div
+        $("#botc").css("background-color","yellow");
+        elem=document.getElementById("botc")
+        elem.style.position="absolute";
+        elem.style.left=x+"px";
+        elem.style.top=y+"px";
+        elem.style.width="200px";
+        elem.style.height="100px";
+        elem.style.border="1px solid";
+        $('#test').attr('name');
+        //alert($(e.target).attr('id')); //获取当前按钮的id
+        var ii=$(e.target).attr('id');
+        
+        kkk[0]=ii          //保存当前主界面按钮的id
+    
+        document.getElementById($(e.target).attr('id')).id="ff"; //修改主界面按钮id
+        document.getElementById("kvk").id=ii+"_k";                                   //修改开反馈按钮id
+        document.getElementById("kvg").id=ii+"_g";                                   //修改关反馈按钮id
+                                                       
+        document.getElementById("bo").innerHTML=ii+"开关阀";
+        c=true     //打开开关阀弹窗后，标志位置为True
+        }c
+    }
+
+    //关闭开关阀弹窗的函数
+    function pppsk(){
+        document.getElementById(kkk[0]+"_k").id="kvk"; //将开反馈按钮id还原
+        document.getElementById(kkk[0]+"_g").id="kvg"; //将关反馈按钮id还原
+        document.getElementById("ff").id=String(kkk[0]); //将主界面按钮id还原
+        $("#botc").attr("style","display:none;");//显示div
+        c=false                       //关闭弹窗后，弹窗标志位置为false
+    }
+
+
 </script>
