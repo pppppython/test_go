@@ -14,6 +14,8 @@
 <body>
 <div style="margin-left:50px">
     <h2>web上位机测试</h2>
+    <input type='file' accept='text/plain' onchange='openFile(event)'><br>
+    <div id="output"></div>
     <h4>收到的实时数据</h4>
     <div style="border:1px solid;width: 1300px;height: 80px;">
         <div id="msgArea" style="width:100%;height: 100%;overflow-y: scroll"></div>
@@ -93,9 +95,13 @@
 </html>
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script>
+
+
     var ws;
     var arr3;   //用于存储服务器发来的数据的数组
-    
+
+    var th=new Array();
+ 
     //下面这个数组用于储存需要显示实时信息的工位号
     var cars=new Array()
     cars[0]="te0"
@@ -112,6 +118,25 @@
 
     var b=false    //调节阀弹窗标志位
     var c=false    //开关阀弹窗标志位
+ 
+
+
+    //读取TXT格式的配置文件
+    var openFile = function(event) {
+            var input = event.target;
+            var reader = new FileReader();
+            reader.onload = function() {
+                if(reader.result) {
+                    //显示文件内容
+                    //alert(typeof(reader.result));  "\r\n"
+                    //th=reader.result.split(/[\s\n]/);
+                    th=reader.result.split("\r\n");    //将读取的txt文本文件按换行符分割成数组
+                    //alert(th.length)
+                }
+            };
+            reader.readAsText(input.files[0]);
+        };
+
 
 
 
@@ -142,11 +167,24 @@
             document.getElementById("te5").innerHTML =arr3[4]
             */
 
-            //cars的数组长度代表需要显示的信号数量
+            /*cars的数组长度代表需要显示的信号数量
             for ( var i = 0; i <cars.length; i++){
           
                 document.getElementById(cars[i]).innerHTML =arr3[i]      
              }
+             */
+
+             //cars的数组长度代表需要显示的信号数量
+            if (th)
+            {
+            for ( var i = 0; i <th.length; i++){
+                  //alert(i <th.length);
+                  document.getElementById(th[i]).innerHTML =arr3[i]      
+            }
+            }
+
+
+
             
         }
         ws.onclose = function(event){alert("已经与服务器断开连接\r\n当前连接状态："+this.readyState);};
