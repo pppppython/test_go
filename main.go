@@ -28,7 +28,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 
 	go geet() //开启一个goroutine，连接TCP服务器
-
+	println("hello world")
 	// Create a simple file server
 	fs := http.FileServer(http.Dir("../public"))
 	http.Handle("/", fs)
