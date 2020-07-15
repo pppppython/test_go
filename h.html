@@ -51,8 +51,8 @@
 
         <p id="kv6-k">春江花月夜</p>
         <p id="kv6-g">春江花月夜</p>
-        <p id="te8">春江花月夜</p>
-        <p id="te9">春江花月夜</p>
+        <p id="kv7-k">春江花月夜</p>
+        <p id="kv7-g">春江花月夜</p>
         <p id="te10">春江花月夜</p>
         <p id="te11">春江花月夜</p>
        
@@ -115,8 +115,13 @@
 
     var ws;
     var arr3;   //用于存储服务器发来的数据的数组
-
+    
+    //th数组存储配置文件里面的工位号
     var th=new Array();
+
+    //这个数组存储弹窗的数据
+    var t1=new Array();
+
  
     //下面这个数组用于储存需要显示实时信息的工位号
     var cars=new Array()
@@ -147,7 +152,7 @@
                     //alert(typeof(reader.result));  "\r\n"
                     //th=reader.result.split(/[\s\n]/);
                     th=reader.result.split("\r\n");    //将读取的txt文本文件按换行符分割成数组
-                    alert(th)
+                    //alert(th)
                 }
             };
             reader.readAsText(input.files[0]);
@@ -174,6 +179,7 @@
             var arr3=event.data.split(" ");
             //arr3=event.data.split(" ");
             arr3.shift()  //删除数组第一个元素
+            //alert(arr3)
             //arr3.pop();   //删除数组最后一个元素
             /*
             document.getElementById("te1").innerHTML =arr3[0]
@@ -203,6 +209,7 @@
                     
                     {   
                         document.getElementById(th[i]).innerHTML =arr3[i]      //那么就赋值
+                       
                         //针对模拟量
                         if (document.getElementById(th[i]+"_T"))
                         {
@@ -212,13 +219,31 @@
                             document.getElementById(th[i]+"_T").innerHTML =arr3[i]      //那么就赋值
                             }
                         }
-
-
                         
+                         /*
+                        //针对布尔量
+                        if (document.getElementById(th[i]+'s'))
+                        {
+                            alert(th[i]+"s");  
+                            //$("#"+th[i]+"1").innerHTML =arr3[i]      //那么就赋值
+                            
+                        }
+                        */
                         
-                       
                     }
                 }
+            }
+
+
+            //给布尔弹窗赋值
+            if (c)     //如果布尔弹窗打开
+            
+            {
+                var a=arr3[t1[0]+1]
+                var b=arr3[t1[1]+1]
+                //alert(t1[0]+"kk"+t1[1])
+                document.getElementById(kkk[0]+"-k1").innerHTML =a;
+                document.getElementById(kkk[0]+"-g1").innerHTML =b
             }
 
 
@@ -367,8 +392,11 @@
         
         kkk[0]=ii          //保存当前主界面按钮的id
     
+        var s1=th.indexOf(ii+"-k")     //获取开反馈在配置文件中的索引
+        var s2=th.indexOf(ii+"-g")     //获取关反馈在配置文件中的索引
+        t1.unshift(s1,s2);             //t1存储了反馈工位的索引
         document.getElementById($(e.target).attr('id')).id="ff"; //修改主界面按钮id
-        document.getElementById("k").id=ii+"-k1";                                   //修改开反馈按钮id   data.replace("[","");
+        document.getElementById("k").id=ii+"-k1";                                   //修改开反馈按钮id  在原id后面加上1
         document.getElementById("g").id=ii+"-g1";                                   //修改关反馈按钮id
                                                        
         document.getElementById("bo").innerHTML=ii+"开关阀";
