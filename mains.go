@@ -66,7 +66,7 @@ func main() {
 
 	http.HandleFunc("/", saye)               //设置访问的路由
 	http.HandleFunc("/xx", sayhelloName)     //设置访问的路由
-	err := http.ListenAndServe(":8000", nil) //设置监听的端口
+	err := http.ListenAndServe("192.168.1.5:8000", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
