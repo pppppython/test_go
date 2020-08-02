@@ -2,21 +2,29 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
-	"time"
 	"os"
-	"io"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/gorilla/websocket"
 )
 
+var mutex sync.Mutex
 var clients = make(map[*websocket.Conn]bool) // 连接的客户端，是一个集合
 var broadcast = make(chan string)            // 广播通道
 var a string
 var rr = make([]byte, 1) //定义切片，保存前端传来的控制信息,长度为1，容量为1
 
 var ch2 = make(chan []byte)
+
+var b int                  //用于存储待接收字节的长度,给x切片赋值
+var x = make([]int, 5, 10) //直接定义切片，存储待接收字节的长度
+var c int                  //用于存储待接收字节的长度,从x切片获取
 
 // 配置升级http协议
 var upgrader = websocket.Upgrader{
@@ -25,11 +33,10 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-
-
 func saye(w http.ResponseWriter, r *http.Request) {
 	f, err := os.Open("mains.html")
 	if err != nil {
+
 		log.Fatalln(err)
 	}
 	defer f.Close()
@@ -45,32 +52,48 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	io.Copy(w, f)
 }
 
+func cs(w http.ResponseWriter, r *http.Request) {
+	//println("kkkk")
 
+	if r.Method == "GET" && len(r.FormValue("firstname")) > 0 {
+		//println(r.FormValue("firstname"))
 
+		b, _ := strconv.Atoi(r.FormValue("firstname"))
+		x[1] = b
+		//x.WriteString(b)
+		//ch3 <- b //将前端传来的消息传入ch2通道
+		//println(b)
 
+	}
+	f, err := os.Open("cs.html")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer f.Close()
+	io.Copy(w, f)
+
+}
 
 //主线程
 func main() {
 
 	go geet() //开启一个goroutine，连接TCP服务器
-	
-	// Create a simple file server
-	//fs := http.FileServer(http.Dir("../public"))
-	//http.Handle("/", fs)
 
 	// 配置websocket路由
 	http.HandleFunc("/ws", handleConnections)
-	
+
 	// 获取消息，并发送到每一个客户端
 	go handleMessages()
 
-	http.HandleFunc("/", saye)               //设置访问的路由
-	http.HandleFunc("/xx", sayhelloName)     //设置访问的路由
+	http.HandleFunc("/", saye) //主界面路由
+	http.HandleFunc("/cs", cs)
+	http.HandleFunc("/xx", sayhelloName) //流程界面路由
+
 	err := http.ListenAndServe("192.168.1.5:8000", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
-	
+
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -88,12 +111,11 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 	//循环读取当前客户端传来的控制信息
 	for {
-		
+
 		//接收每个客户端发回来的消息
 
 		_, rr, err := ws.ReadMessage()
-		//ss := string(rr[0])
-		//fmt.Println(ss)
+
 		ch2 <- rr //将前端传来的消息传入ch2通道
 		//ss[0:0]
 		if err != nil {
@@ -147,17 +169,20 @@ func geet() {
 			conn.Write(pp) //向tcp服务器发送数据
 		}
 	}()
+	//c := <-ch3
 
-	buffer := make([]byte, 62)
+	buffer := make([]byte, 1000)
 
 	for {
-		//time.Sleep(1 * time.Second)
-		time.Sleep(time.Duration(100) * time.Millisecond)
 
+		time.Sleep(time.Duration(100) * time.Millisecond) //延时100毫秒
+
+		c := x[1]
 		conn.Read(buffer) //读取TCP发来的数据
 
-		kk := string(buffer[:62])
-		//fmt.Println(len(kk))
+		kk := string(buffer[:c])
+		println("接收的字节长度:" + strconv.Itoa(c))
+
 		// 将新接收到的消息发送到广播频道
 		broadcast <- kk
 
