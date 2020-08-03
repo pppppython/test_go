@@ -149,8 +149,7 @@ var chart = Highcharts.chart('container', {
 			
 		},
 
-		
-        
+
 
 		title: {
 			text: '动态模拟实时数据'
@@ -164,6 +163,16 @@ var chart = Highcharts.chart('container', {
 				text: null
 			}
 		},
+
+		//此处去点数据点marker
+		plotOptions: {
+		series: {
+			marker: {
+				enabled: false
+			}
+		}
+	   },
+	   
 		tooltip: {
 			shared: true,
 			pointFormatter: function () {
