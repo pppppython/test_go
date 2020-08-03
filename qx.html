@@ -24,9 +24,8 @@
 
 
 <!-- 图表容器 DOM -->
-<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
-
-
+<div id="container" style="width: 400px; height: 300px;position:absolute;left: 50px;top: 200px;"></div>
+<div id="ccontainer" style="width: 400px; height: 300px;position:absolute;left: 600px;top: 200px;"></div>
 
 
 
@@ -40,16 +39,14 @@
 
 
     var ws;
-    var arr3;   //用于存储服务器发来的数据的数组
+    var arr3=[];   //用于存储服务器发来的数据的数组
     
     //th数组存储配置文件里面的工位号
     var th=new Array();
 
    
-   
-
-
-    //读取TXT格式的配置文件
+	
+//取TXT格式的配置文件
     var openFile = function(event) {
             var input = event.target;
             var reader = new FileReader();
@@ -82,10 +79,23 @@
             var date = new Date();
             var msg = "<p>"+date.toLocaleString()+"</p>"+"<p>"+event.data+"</p>";
             $("#msgArea").append(msg);
-            var arr3=event.data.split(" ");
+            window.arr3=event.data.split(" ");
             //arr3=event.data.split(" ");
-            arr3.shift()  //删除数组第一个元素
-            //alert(arr3)
+			window.arr3.shift()  //删除数组第一个元素
+          
+			/*
+            if (i==5){
+			x = (new Date()).getTime();// 当前时间
+			chart.series[0].addPoint(parseFloat(arr3[0]), true, true);
+			chart.series[1].addPoint(parseFloat(arr3[1]), true, true);
+			chart.series[2].addPoint(parseFloat(arr3[2]), true, true);
+			chart.series[3].addPoint(parseFloat(arr3[3]), true, true);
+            
+			i=0
+			}
+			*/
+
+			
             
         }
         ws.onclose = function(event){alert("已经与服务器断开连接\r\n当前连接状态："+this.readyState);};
@@ -93,104 +103,123 @@
     }
 
 
-
-
-//图片配置
-    Highcharts.setOptions({
-	global: {
-		useUTC: false
-	}
-});
-function activeLastPointToolip(chart) {
-	var points = chart.series[0].points;
-	//chart.tooltip.refresh(points[points.length -1]);
-}
+/*
 var chart = Highcharts.chart('container', {
-	chart: {
-		type: 'spline',
-		marginRight: 10,
-		events: {
-			load: function () {
-				var series0 = this.series[0];
-                var series1 = this.series[1];
-					chart = this;
-				activeLastPointToolip(chart);
+		series: [{name:"wendu",
+			data: [1,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+		},
+      {
+			data: [1,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+		},
+      ]
+
+
+	});
+*/
+
+
+
+
+	
+	var chart = Highcharts.chart('container', {
+		chart: {
+			type: 'spline',
+		
+			marginRight: 10,
+			
+			events: {
+				load: function () {
+				var 
+				chart = this,
+					series = chart.series;
+
 				setInterval(function () {
 					var x = (new Date()).getTime(), // 当前时间
-						y = Math.random();          // 随机值
-					series0.addPoint([x, y], true, true);
-                    series1.addPoint([x, Math.random()], true, true);
-					activeLastPointToolip(chart);
+						y = Math.random(),
+						y1 = Math.random();
+                    //alert(window.arr3);
+					series[0].addPoint([x, parseFloat(window.arr3[1])], false, true);
+					series[1].addPoint([x, parseFloat(window.arr3[2])], true, true);
+					//activeLastPointToolip(chart);
 				}, 1000);
 			}
-		}
-	},
-	title: {
-		text: '动态模拟实时数据'
-	},
-	xAxis: {
-		type: 'datetime',
-		tickPixelInterval: 150
-	},
-	yAxis: {
+				
+				
+			}
+			
+		},
+
+		
+        
+
 		title: {
-			text: null
-		}
-	},
-
-
-
-	tooltip: {
-		formatter: function () {
-			return '<b>' + this.series.name + '</b><br/>' +
-				Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-				Highcharts.numberFormat(this.y, 2);
-		}
-	},
-	legend: {
-		enabled: false
-	},
-
-    plotOptions: {
-		series: {
-			marker: {
-				enabled: false
+			text: '动态模拟实时数据'
+		},
+		xAxis: {
+			type: 'datetime',
+			tickPixelInterval: 50
+		},
+		yAxis: {
+			title: {
+				text: null
 			}
-		}
-	},
-	series: [{
-		name: '随机数据',
-		data: (function () {
-			// 生成随机值
-			var data = [],
-				time = (new Date()).getTime(),
-				i;
-			for (i = -19; i <= 0; i += 1) {
-				data.push({
-					x: time + i * 1000,
-					y: Math.random()
-				});
+		},
+		tooltip: {
+			shared: true,
+			pointFormatter: function () {
+				let s = '<b>' + this.series.name + '：' +'</b>' + Highcharts.numberFormat(this.y, 2) + '<br/>';
+				//let t = Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x);
+				return s;
 			}
-			return data;
-		}())
-	},
+		},
+		legend: {
+			enabled: true
+		},
+		exporting: {        enabled: false
+				   },    
+		series: [{
+			name: 'PM2.5',
+			data: (function () {
+				// 生成随机值
+				var data = [],
+					time = (new Date()).getTime(),
+					i;
+				for (i = -19; i <= 0; i += 1) {
+					data.push({
+						x: time + i * 1000,
+						y: Math.random()
+					});
+				}
+				return data;
+			}())
+		},
+				 {
+					 name: 'PM10',
+					 data: (function () {
+						 // 生成随机值
+						 var data = [],
+							 time = (new Date()).getTime(),
+							 i;
+						 for (i = -19; i <= 0; i += 1) {
+							 data.push({
+								 x: time + i * 1000,
+								 y: Math.random()
+							 });
+						 }
+						 return data;
+					 }())
+				 }]
+	});
 
-    {
-      name: 'Random data',
-      data: (function () {
-         // 生成随机数据数组,包含19个随机数
-         var data = [],time = (new Date()).getTime(),i;
-         for (i = -19; i <= 0; i += 1) {
-            data.push({
-               x: time + i * 1000,
-               y: Math.random()
-            });
-         }
-         return data;
-      }()), }   
-    
-    
-    ]
-});
+/*
+function x1(){
+	//alert(arr3);
+	chart.series[0].addPoint(parseFloat(window.arr3[0]), true, true);
+	chart.series[1].addPoint(parseFloat(window.arr3[1]), true, true);
+			
+	setTimeout(x1, 1000);
+}
+*/
 
-</script>
+
+	</script>
