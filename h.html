@@ -109,6 +109,7 @@
 </body>
 
 </html>
+
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script>
 
@@ -165,7 +166,8 @@
         link();
     })
     function link () {
-        ws = new WebSocket("ws://localhost:8000/ws");//连接服务器
+        ws = new WebSocket("ws://192.168.1.7:8000/ws");//连接服务器
+        //ws = new WebSocket("ws://localhost:8000/ws");//连接服务器
         ws.onopen = function(event){
             //console.log(event);
             alert('连接了');
@@ -327,6 +329,7 @@
        document.getElementById("tt").id=ii;                                   //将<p>的id改为之前按钮的id
        cars.push(ii)                                                          //向工位数组添加一个工位号
        document.getElementById("gw").innerHTML=ii+"调节阀";
+       document.getElementById("tt1").id=ii+"c";                   //修改开度设定显示的id
        b=true     //打开弹窗后，标志位置为True
        }
     }
@@ -334,6 +337,7 @@
     function ppps(){
         document.getElementById(ppp[0]).id="tt"; //p元素id还原
         document.getElementById("freightaccountdo").id=String(ppp[0]); //按钮id还原
+        document.getElementById(ppp[0]+"c").id="tt1";                        //开度设定显示的id还原为tt1
         $("#tc").attr("style","display:none;");//显示div
         cars.pop();                   //删除之前工位数组添加的工位号
         b=false                       //关闭弹窗后，弹窗标志位置为false
@@ -416,15 +420,21 @@
         document.getElementById("k").id=ii+"k1";                                   //修改开反馈按钮id  在原id后面加上1
         document.getElementById("g").id=ii+"g1";                                   //修改关反馈按钮id
                                                        
-        document.getElementById("bo").innerHTML=ii+"开关阀";
+        document.getElementById("bo").innerHTML=ii+"开关阀";                       //修改阀门弹窗标题
+
+        //document.getElementById("kkk").id=ii+"kkk";                                  //修改控制按钮的背景颜色，确保所有上位机显示一致
+        //document.getElementById("ggg").id=ii+"ggg";                                  //修改控制按钮的背景颜色，确保所有上位机显示一致
+
+
         c=true     //打开开关阀弹窗后，标志位置为True
-        }c
+        }
     }
 
     //关闭开关阀弹窗的函数
     function pppsk(){
         document.getElementById(kkk[0]+"k1").id="k"; //将开反馈按钮id还原
         document.getElementById(kkk[0]+"g1").id="g"; //将关反馈按钮id还原
+        
         document.getElementById("ff").id=String(kkk[0]); //将主界面按钮id还原
         $("#botc").attr("style","display:none;");//显示div
         c=false                       //关闭弹窗后，弹窗标志位置为false

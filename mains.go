@@ -53,16 +53,11 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 }
 
 func cs(w http.ResponseWriter, r *http.Request) {
-	//println("kkkk")
 
 	if r.Method == "GET" && len(r.FormValue("firstname")) > 0 {
-		//println(r.FormValue("firstname"))
 
 		b, _ := strconv.Atoi(r.FormValue("firstname"))
 		x[1] = b
-		//x.WriteString(b)
-		//ch3 <- b //将前端传来的消息传入ch2通道
-		//println(b)
 
 	}
 	f, err := os.Open("cs.html")
@@ -71,7 +66,15 @@ func cs(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 	io.Copy(w, f)
+}
 
+func qx(w http.ResponseWriter, r *http.Request) {
+	f, err := os.Open("qx.html")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer f.Close()
+	io.Copy(w, f)
 }
 
 //主线程
@@ -85,11 +88,12 @@ func main() {
 	// 获取消息，并发送到每一个客户端
 	go handleMessages()
 
-	http.HandleFunc("/", saye) //主界面路由
-	http.HandleFunc("/cs", cs)
+	http.HandleFunc("/", saye)           //主界面路由
+	http.HandleFunc("/cs", cs)           //参数界面路由
 	http.HandleFunc("/xx", sayhelloName) //流程界面路由
+	http.HandleFunc("/qx", qx)           //曲线界面路由
 
-	err := http.ListenAndServe("192.168.1.5:8000", nil) //设置监听的端口
+	err := http.ListenAndServe("192.168.1.7:8000", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -164,8 +168,7 @@ func geet() {
 		for {
 			time.Sleep(time.Duration(100) * time.Millisecond)
 			pp := <-ch2
-			//pk := string(pp[:49])
-			//fmt.Println(pk)
+
 			conn.Write(pp) //向tcp服务器发送数据
 		}
 	}()
