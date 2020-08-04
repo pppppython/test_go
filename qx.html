@@ -25,7 +25,7 @@
 
 <!-- 图表容器 DOM -->
 <div id="container" style="width: 400px; height: 300px;position:absolute;left: 50px;top: 200px;"></div>
-<div id="ccontainer" style="width: 400px; height: 300px;position:absolute;left: 600px;top: 200px;"></div>
+<div id="ccontainer" style="width: 400px; height: 300px;position:absolute;left: 500px;top: 200px;"></div>
 
 
 
@@ -80,20 +80,9 @@
             var msg = "<p>"+date.toLocaleString()+"</p>"+"<p>"+event.data+"</p>";
             $("#msgArea").append(msg);
             window.arr3=event.data.split(" ");
-            //arr3=event.data.split(" ");
+      
 			window.arr3.shift()  //删除数组第一个元素
           
-			/*
-            if (i==5){
-			x = (new Date()).getTime();// 当前时间
-			chart.series[0].addPoint(parseFloat(arr3[0]), true, true);
-			chart.series[1].addPoint(parseFloat(arr3[1]), true, true);
-			chart.series[2].addPoint(parseFloat(arr3[2]), true, true);
-			chart.series[3].addPoint(parseFloat(arr3[3]), true, true);
-            
-			i=0
-			}
-			*/
 
 			
             
@@ -103,23 +92,13 @@
     }
 
 
-/*
-var chart = Highcharts.chart('container', {
-		series: [{name:"wendu",
-			data: [1,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-		},
-      {
-			data: [1,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-		},
-      ]
-
-
-	});
-*/
 
 
 
+//图表配置
 
+
+//第一张表
 	
 	var chart = Highcharts.chart('container', {
 		chart: {
@@ -137,10 +116,11 @@ var chart = Highcharts.chart('container', {
 					var x = (new Date()).getTime(), // 当前时间
 						y = Math.random(),
 						y1 = Math.random();
-                    //alert(window.arr3);
+               
 					series[0].addPoint([x, parseFloat(window.arr3[1])], false, true);
-					series[1].addPoint([x, parseFloat(window.arr3[2])], true, true);
-					//activeLastPointToolip(chart);
+					series[1].addPoint([x, parseFloat(window.arr3[2])], false, true);
+					series[2].addPoint([x, parseFloat(window.arr3[3])], true, true);
+					
 				}, 1000);
 			}
 				
@@ -172,7 +152,7 @@ var chart = Highcharts.chart('container', {
 			}
 		}
 	   },
-	   
+
 		tooltip: {
 			shared: true,
 			pointFormatter: function () {
@@ -217,18 +197,149 @@ var chart = Highcharts.chart('container', {
 						 }
 						 return data;
 					 }())
-				 }]
+				 },
+
+				 {
+					 name: 'PM110',
+					 data: (function () {
+						 // 生成随机值
+						 var data = [],
+							 time = (new Date()).getTime(),
+							 i;
+						 for (i = -19; i <= 0; i += 1) {
+							 data.push({
+								 x: time + i * 1000,
+								 y: Math.random()
+							 });
+						 }
+						 return data;
+					 }())
+				 }
+				 
+
+				 ]
 	});
 
-/*
-function x1(){
-	//alert(arr3);
-	chart.series[0].addPoint(parseFloat(window.arr3[0]), true, true);
-	chart.series[1].addPoint(parseFloat(window.arr3[1]), true, true);
+//第二张表
+var chart = Highcharts.chart('ccontainer', {
+		chart: {
+			type: 'spline',
+		
+			marginRight: 10,
 			
-	setTimeout(x1, 1000);
-}
-*/
+			events: {
+				load: function () {
+				var 
+				chart = this,
+					series = chart.series;
+
+				setInterval(function () {
+					var x = (new Date()).getTime(), // 当前时间
+						y = Math.random(),
+						y1 = Math.random();
+               
+					series[0].addPoint([x, parseFloat(window.arr3[1])], false, true);
+					series[1].addPoint([x, parseFloat(window.arr3[2])], false, true);
+					series[2].addPoint([x, parseFloat(window.arr3[3])], true, true);
+					
+				}, 1000);
+			}
+				
+				
+			}
+			
+		},
+
+
+
+		title: {
+			text: '动态模拟实时数据'
+		},
+		xAxis: {
+			type: 'datetime',
+			tickPixelInterval: 50
+		},
+		yAxis: {
+			title: {
+				text: null
+			}
+		},
+
+		//此处去点数据点marker
+		plotOptions: {
+		series: {
+			marker: {
+				enabled: false
+			}
+		}
+	   },
+
+		tooltip: {
+			shared: true,
+			pointFormatter: function () {
+				let s = '<b>' + this.series.name + '：' +'</b>' + Highcharts.numberFormat(this.y, 2) + '<br/>';
+				//let t = Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x);
+				return s;
+			}
+		},
+		legend: {
+			enabled: true
+		},
+		exporting: {        enabled: false
+				   },    
+		series: [{
+			name: 'PM2.5',
+			data: (function () {
+				// 生成随机值
+				var data = [],
+					time = (new Date()).getTime(),
+					i;
+				for (i = -19; i <= 0; i += 1) {
+					data.push({
+						x: time + i * 1000,
+						y: Math.random()
+					});
+				}
+				return data;
+			}())
+		},
+				 {
+					 name: 'PM10',
+					 data: (function () {
+						 // 生成随机值
+						 var data = [],
+							 time = (new Date()).getTime(),
+							 i;
+						 for (i = -19; i <= 0; i += 1) {
+							 data.push({
+								 x: time + i * 1000,
+								 y: Math.random()
+							 });
+						 }
+						 return data;
+					 }())
+				 },
+
+				 {
+					 name: 'PM110',
+					 data: (function () {
+						 // 生成随机值
+						 var data = [],
+							 time = (new Date()).getTime(),
+							 i;
+						 for (i = -19; i <= 0; i += 1) {
+							 data.push({
+								 x: time + i * 1000,
+								 y: Math.random()
+							 });
+						 }
+						 return data;
+					 }())
+				 }
+				 
+
+				 ]
+	});
 
 
 	</script>
