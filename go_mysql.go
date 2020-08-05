@@ -46,21 +46,57 @@ func main() {
 		log.Fatal("数据库连接出现了问题，llll：", err)
 		return
 	}
+	/*
+		//准备插入数据
+		//使用DB结构体实例方法Prepare预处理插入,Prepare会返回一个stmt对象
+		stmt, err := db0.Prepare("insert into `db1`(id,name,salary)values(?,?,?)")
+		if err != nil {
+			fmt.Println("预处理失败:", err)
+			return
+		}
+		//使用Stmt对象执行预处理参数
+		result, err := stmt.Exec(33, "pengjin", 12580) //这3个参数是即将插入表中的数据
+		if err != nil {
+			fmt.Println("执行预处理失败:", err)
+			return
+		} else {
+			rows, _ := result.RowsAffected() //执行插入数据
+			fmt.Println("执行成功,影响行数", rows, "行")
+		}
 
-	//准备插入数据
-	//使用DB结构体实例方法Prepare预处理插入,Prepare会返回一个stmt对象
-	stmt, err := db0.Prepare("insert into `db1`(id,name,salary)values(?,?,?)")
+	*/
+
+	/*
+		//准备删除数据
+		//直接调用db实例中的Exec方法实现预处理
+		result, err := db0.Exec("delete from `db1` where id=?", 90)
+		if err != nil {
+			fmt.Println("预处理失败:", err)
+			return
+		}
+
+		if err != nil {
+			fmt.Println("执行预处理失败:", err)
+			return
+		} else {
+			rows, _ := result.RowsAffected()
+			fmt.Println("执行成功,影响行数", rows, "行")
+		}
+	*/
+
+	//准备更新数据
+	//直接调用db实例中的Exec方法实现预处理
+	result, err := db0.Exec("update `db1` set id=?,name=? where id=?", 34, "zhangsan", 90800)
 	if err != nil {
 		fmt.Println("预处理失败:", err)
 		return
 	}
-	//使用Stmt对象执行预处理参数
-	result, err := stmt.Exec(33, "pengjin", 12580) //这3个参数是即将插入表中的数据
+
 	if err != nil {
 		fmt.Println("执行预处理失败:", err)
 		return
 	} else {
-		rows, _ := result.RowsAffected() //执行插入数据
+		rows, _ := result.RowsAffected()
 		fmt.Println("执行成功,影响行数", rows, "行")
 	}
 
