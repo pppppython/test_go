@@ -1,7 +1,27 @@
 import sys
+
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QLabel,QPushButton,QComboBox
+import snap7
+from snap7.util import *
+from snap7.snap7types import *
+import time
 def pp():
     print("hello")
+
+#读取函数d
+def readd():
+    plc=snap7.client.Client()
+    plc.connect("192.168.0.1",rack=0,slot=1)
+    s=plc.read_area(0x84,1,0,20)
+    
+    xx=''
+    for i in range(5):
+        xx=xx+str(get_real(s,i*4))+"  "
+    print(xx)
+    ex.test.setText(xx)
+    #self.test.setText(xx)
 
 
 class Example(QWidget):
@@ -14,6 +34,15 @@ class Example(QWidget):
     def initUI(self):
         self.resize(1000, 600)
         self.setWindowTitle('plc')
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.showTime)
+
+        self.start = QPushButton(self)
+        self.start.setText("开始")         #按钮文本
+        self.start.move(80,0)                   #按钮位s置
+        self.start.clicked.connect(self.startTimer)
+        
 
         #文本标签测试
         self.test = QLabel(self)
@@ -58,13 +87,22 @@ class Example(QWidget):
 
 
 
-        #定义按钮，并绑定事件
+        #定义读取按钮，并绑定事件
         self.closeButton = QPushButton(self)
         self.closeButton.setText("读取")         #按钮文本
         self.closeButton.setShortcut('Ctrl+D')    #给按钮绑定快捷键
-        self.closeButton.clicked.connect(self.seeet)   #给按钮绑定事件
+        self.closeButton.clicked.connect(self.read)   #给按钮绑定事件
         self.closeButton.setToolTip("Close the widget") #显示提示消息
         self.closeButton.move(550,70)                   #按钮位置
+
+        #定义测试按钮，并绑定事件
+        self.cButton = QPushButton(self)
+        self.cButton.setText("测试")         #按钮文本
+        self.cButton.setShortcut('Ctrl+D')    #给按钮绑定快捷键
+        self.cButton.clicked.connect(readd)   #给按钮绑定事件
+        self.cButton.setToolTip("Close the widget") #显示提示消息
+        self.cButton.move(550,20)                   #按钮位置
+
 
         self.show()
 
@@ -74,6 +112,37 @@ class Example(QWidget):
         self.test.setText(sex)
 
     #读取函数
+    def read(self):
+        plc=snap7.client.Client()
+        plc.connect("192.168.0.1",rack=0,slot=1)
+        s=plc.read_area(0x84,1,0,20)
+
+        xx=''
+        for i in range(5):
+            xx=xx+str(get_real(s,i*4))+"  "
+        self.test.setText(xx)
+
+    #定时刷新函数
+    def showTime(self):
+        
+        time = QDateTime.currentDateTime()
+        timeDisplay = time.toString("yyyy-MM-dd hh:mm:ss dddd")
+        plc=snap7.client.Client()
+        plc.connect("192.168.0.1",rack=0,slot=1)
+        s=plc.read_area(0x84,1,0,20)
+
+        xx=''
+        for i in range(5):
+            xx=xx+str(get_real(s,i*4))+"  "
+        self.test.setText(xx)
+        
+        
+    def startTimer(self):
+        self.timer.start(1000)
+        self.start.setEnabled(False)
+        
+    
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
