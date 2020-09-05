@@ -1,11 +1,12 @@
 import sys
-
+from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QLabel,QPushButton,QComboBox
 import snap7
 from snap7.util import *
 from snap7.snap7types import *
+from PyQt5.QtGui import QIcon
 import time
 def pp():
     print("hello")
@@ -24,7 +25,8 @@ def readd():
     #self.test.setText(xx)
 
 
-class Example(QWidget):
+#class Example(QWidget):
+class Example(QMainWindow):
     
 
     def __init__(self):
@@ -34,6 +36,35 @@ class Example(QWidget):
     def initUI(self):
         self.resize(1000, 600)
         self.setWindowTitle('plc')
+
+        exitAction = QAction(QIcon('exit.png'), '&退出', self)       
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('退出软件')
+        exitAction.triggered.connect(self.close)
+
+        bxitAction = QAction(QIcon('exit.png'), '&帮助', self)       
+        bxitAction.setShortcut('Ctrl+H')
+        bxitAction.setStatusTip('帮助文档')
+        bxitAction.triggered.connect(self.close)
+ 
+        self.statusBar()
+ 
+        menubar = self.menuBar()
+        aMenu = menubar.addMenu('&菜单')
+        aMenu.addAction(exitAction)
+        aMenu.addAction(bxitAction)
+
+        
+
+
+
+
+
+
+
+
+
+
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.showTime)
