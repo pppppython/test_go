@@ -47,37 +47,27 @@ class Example(QMainWindow):
         bxitAction.setStatusTip('帮助文档')
         bxitAction.triggered.connect(self.close)
  
-        self.statusBar()
- 
+        #self.statusBar()
+        #self.statusBar.setStyleSheet("background-color:gray")
         menubar = self.menuBar()
         aMenu = menubar.addMenu('&菜单')
         aMenu.addAction(exitAction)
         aMenu.addAction(bxitAction)
 
-        
 
-
-
-
-
-
-
-
-
-
-
+        ##pyqt5定时器
         self.timer = QTimer()
         self.timer.timeout.connect(self.showTime)
         #开始读取按钮
         self.start = QPushButton(self)
-        self.start.setText("开始")         #按钮文本
+        self.start.setText("开始读取")         #按钮文本
         self.start.move(80,150)                   #按钮位s置
         self.start.clicked.connect(self.startTimer)
         
 
         #结束读取按钮
         self.end = QPushButton(self)
-        self.end.setText("停止")         #按钮文本
+        self.end.setText("停止读取")         #按钮文本
         self.end.move(180,150)                   #按钮位s置
         self.end.clicked.connect(self.endTimer)
         
@@ -106,28 +96,60 @@ class Example(QMainWindow):
 
         #DB号常量
         self.dbnumber=QLabel(self)
-        self.dbnumber.setGeometry(220,70,200,20)
+        self.dbnumber.setGeometry(20,120,200,20)
         self.dbnumber.setText('DB号')
         #DB号输入框
         self.dblen=QLineEdit(self)
-        self.dblen.setGeometry(270, 70, 60, 20)
+        self.dblen.setGeometry(50, 120, 60, 20)
+
+        #读取的字节数
+        self.readlen=QLabel(self)
+        self.readlen.setGeometry(150,120,200,20)
+        self.readlen.setText("读取字节数：")
+        #读取长度输入框
+        self.read_len=QLineEdit(self)
+        self.read_len.setGeometry(250,120,100,20)
         
         #读取数据类型，文本常量
-        self.dbnumber=QLabel(self)
-        self.dbnumber.setGeometry(370,70,200,20)
-        self.dbnumber.setText('读取类型：')
+        self.readtype=QLabel(self)
+        self.readtype.setGeometry(370,120,200,20)
+        self.readtype.setText('DB结构：')
+
+        self.float_n=QLineEdit(self)
+        self.float_n.setGeometry(570,120,80,20)
 
         #下拉框选择数据类型
          # 实例化QComBox对象
-        self.cb = QComboBox(self)
-        self.cb.move(450, 70)
+        self.t1 = QComboBox(self)
+        #self.cb.move(450, 120)
+        self.t1.setGeometry(450,120,100,20)
 
         # 单个添加条目
-        self.cb.addItem('浮点数')
-        self.cb.addItem('布尔量')
-        # 多个添加条目
-        self.cb.addItems(['字', 'C#', 'PHP'])
+        self.t1.addItem('浮点数')
+        self.t1.addItem('布尔量')
+        self.t1.addItems(['字', 'C#', 'PHP'])
 
+        #输入浮点数个数
+        self.n1=QLineEdit(self)
+        self.n1.setGeometry(570,120,80,20)
+
+
+        #下拉框选择数据类型
+         # 实例化QComBox对象
+        self.t2 = QComboBox(self)
+        #self.cb.move(450, 120)
+        self.t2.setGeometry(680,120,100,20)
+
+        # 单个添加条目
+        self.t2.addItem('浮点数')
+        self.t2.addItem('布尔量')
+        self.t2.addItems(['字', 'C#', 'PHP'])
+
+        #输入浮点数个数
+        self.n2=QLineEdit(self)
+        self.n2.setGeometry(800,120,80,20)
+
+        
 
 
 
@@ -170,7 +192,7 @@ class Example(QMainWindow):
         self.cButton.setShortcut('Ctrl+D')    #给按钮绑定快捷键
         self.cButton.clicked.connect(readd)   #给按钮绑定事件
         self.cButton.setToolTip("Close the widget") #显示提示消息
-        self.cButton.move(550,20)                   #按钮位置
+        self.cButton.move(550,10)                   #按钮位置
 
 
         self.show()
@@ -184,7 +206,7 @@ class Example(QMainWindow):
     def conn(self):
         global plc
         plc=snap7.client.Client()
-        ip=self.plc_ip.text()
+        ip=self.plc_ip.text()     #获取输入的ip地址
         try:
             plc.connect("192.168.0.1",rack=0,slot=1)
             self.state.setStyleSheet("background-color:green")
@@ -193,6 +215,8 @@ class Example(QMainWindow):
         except:
             self.state.setStyleSheet("background-color:gray")
     
+
+    ##断开连接
     def discon(self):
         global plc
         plc.disconnect()
@@ -206,8 +230,10 @@ class Example(QMainWindow):
         
         time = QDateTime.currentDateTime()
         timeDisplay = time.toString("yyyy-MM-dd hh:mm:ss dddd")
-        #plc=snap7.client.Client()
-        #plc.connect("192.168.0.1",rack=0,slot=1)
+
+        #dbn=self.dblen.text()      #获取输入的db号
+        
+
         global plc
         try:
             s=plc.read_area(0x84,1,0,20)
@@ -221,6 +247,17 @@ class Example(QMainWindow):
 
         
     def startTimer(self):
+        print('lalala')
+
+        ##开始定时读取之前，获取读取参数
+        global dbn,read__len,t11,n11,t22,n22
+        dbn=self.dblen.text()      #获取待读取的db号
+        read__len=self.read_len.text()              #获取待读取的字节数
+        t11=self.t1.text()
+        n11=self.n1.text()
+        t22=self.t2.text()
+        n22=self.n2.text()
+        
         self.timer.start(1000)
         self.start.setEnabled(False)
         self.end.setEnabled(True)
