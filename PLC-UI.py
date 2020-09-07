@@ -55,27 +55,7 @@ class Example(QMainWindow):
         aMenu.addAction(bxitAction)
 
 
-        ##pyqt5定时器
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.showTime)
-        #开始读取按钮
-        self.start = QPushButton(self)
-        self.start.setText("开始读取")         #按钮文本
-        self.start.move(80,150)                   #按钮位s置
-        self.start.clicked.connect(self.startTimer)
         
-
-        #结束读取按钮
-        self.end = QPushButton(self)
-        self.end.setText("停止读取")         #按钮文本
-        self.end.move(180,150)                   #按钮位s置
-        self.end.clicked.connect(self.endTimer)
-        
-
-        #文本标签测试
-        self.test = QLabel(self)
-        self.test.setGeometry(0, 300, 800, 200)
-        self.test.setStyleSheet("background-color:gray")
         
         #self.test.setText('测试用')
 
@@ -194,6 +174,45 @@ class Example(QMainWindow):
         self.cButton.setToolTip("Close the widget") #显示提示消息
         self.cButton.move(550,10)                   #按钮位置
 
+        ##pyqt5定时器，用于读取PLC数据
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.showTime)
+        #开始读取按钮
+        self.start = QPushButton(self)
+        self.start.setText("开始读取")         #按钮文本
+        self.start.move(80,150)                   #按钮位s置
+        self.start.clicked.connect(self.startTimer)
+        
+
+        #结束读取按钮
+        self.end = QPushButton(self)
+        self.end.setText("停止读取")         #按钮文本
+        self.end.move(180,150)                   #按钮位s置
+        self.end.clicked.connect(self.endTimer)
+        
+
+        #用于展示读取到的数据
+        self.test = QLabel(self)
+        self.test.setGeometry(0, 300, 800, 200)
+        self.test.setStyleSheet("background-color:gray")
+
+        ##pyqt5定时器，用于创建TCP服务器，并发送数据
+        self.tcptimer=QTimer()
+        self.tcptimer.timeout.connect(self.tcpsend)
+        #开启TCP服务器的按钮
+        self.start1 = QPushButton(self)
+        self.start1.setText("开启TCP服务器")         #按钮文本
+        self.start1.move(0,600)                   #按钮位s置
+        self.start1.clicked.connect(self.start2)
+        #关闭TCP服务器的按钮
+        self.end1 = QPushButton(self)
+        self.end1.setText("关闭TCP服务器")         #按钮文本
+        self.end1.move(180,600)                   #按钮位s置
+        self.end1.clicked.connect(self.stop2)
+
+
+
+
 
         self.show()
 
@@ -245,11 +264,12 @@ class Example(QMainWindow):
             self.test.setText("连接断开")
             self.state.setStyleSheet("background-color:gray")  #修改连接状态
 
-        
+    #开始读取计时
     def startTimer(self):
         print('lalala')
 
         ##开始定时读取之前，获取读取参数
+        '''
         global dbn,read__len,t11,n11,t22,n22
         dbn=self.dblen.text()      #获取待读取的db号
         read__len=self.read_len.text()              #获取待读取的字节数
@@ -257,15 +277,35 @@ class Example(QMainWindow):
         n11=self.n1.text()
         t22=self.t2.text()
         n22=self.n2.text()
-        
+        '''
         self.timer.start(1000)
         self.start.setEnabled(False)
         self.end.setEnabled(True)
 
+    #停止读取计时
     def endTimer(self):
         self.timer.stop()
         self.start.setEnabled(True)
         self.end.setEnabled(False)
+
+
+    #tcp推送函数
+    def tcpsend(self):
+        print("啦啦啦啦阿联")
+    
+    def start2(self):
+        #print("开启TCP服务器")
+        self.tcptimer.start(1000)
+        self.start1.setEnabled(False)
+        self.end1.setEnabled(True)
+
+    def stop2(self):
+        #print("开启TCP服务器")
+        self.tcptimer.stop()
+        self.start1.setEnabled(True)
+        self.end1.setEnabled(False)
+
+
         
     
 
