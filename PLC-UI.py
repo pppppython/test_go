@@ -41,7 +41,9 @@ def print_time( threadName, delay):
     count = 0
     while count<5:
         send_data1 = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到"+str(random.randint(0,10))
-        send_data=send_data1.encode(encoding = "utf-8")
+        global gdata
+        #ss=str(gdata)
+        send_data=gdata.encode(encoding = "utf-8")
         print("hello world")
         print(sys.getsizeof(send_data))
         tcp_client.send(send_data)
@@ -281,12 +283,16 @@ class Example(QMainWindow):
         
 
         global plc
+     
         try:
             s=plc.read_area(0x84,1,0,20)
+            
             xx=''
             for i in range(5):
                 xx=xx+str(get_real(s,i*4))+"  "
             self.test.setText(xx)
+            global gdata
+            gdata=xx
         except:
             self.test.setText("连接断开")
             self.state.setStyleSheet("background-color:gray")  #修改连接状态
