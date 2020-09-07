@@ -1,4 +1,6 @@
-import sys
+import sys,_thread
+import random
+import socket
 from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -24,6 +26,31 @@ def readd():
     ex.test.setText(xx)
     #self.test.setText(xx)
 
+def print_time( threadName, delay):
+
+    global tcp_server
+    tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tcp_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
+    tcp_server.bind(("192.168.0.3", 5000))
+    tcp_server.listen(20)
+    global tcp_client
+    global tcp_client_address
+
+    print("wait")
+    tcp_client, tcp_client_address= tcp_server.accept()
+    count = 0
+    while count<5:
+        send_data1 = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到"+str(random.randint(0,10))
+        send_data=send_data1.encode(encoding = "utf-8")
+        print("hello world")
+        print(sys.getsizeof(send_data))
+        tcp_client.send(send_data)
+        time.sleep(1)
+        #count += 1
+        print (time.ctime(time.time()) )
+
+# 创建两个线程
+
 
 #class Example(QWidget):
 class Example(QMainWindow):
@@ -34,7 +61,7 @@ class Example(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.resize(1000, 600)
+        self.resize(1000, 650)
         self.setWindowTitle('plc')
 
         exitAction = QAction(QIcon('exit.png'), '&退出', self)       
@@ -291,16 +318,53 @@ class Example(QMainWindow):
 
     #tcp推送函数
     def tcpsend(self):
-        print("啦啦啦啦阿联")
+        pass
+        '''
+        try:
+            tcp_client, tcp_client_address= tcp_server.accept()
+            send_data = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到".encode(encoding = "utf-8")
+            tcp_client.send(send_data)
+        except:
+            print("nonono")
+        '''
+   
     
     def start2(self):
+        '''
         #print("开启TCP服务器")
+        global tcp_server
+        tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
+        tcp_server.bind(("", 8000))
+        tcp_server.listen(2)
+        global tcp_client, tcp_client_address
+
+        #tcp_client, tcp_client_address= tcp_server.accept()
+        # 准备要发送给服务器的数据
+        #send_data = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到".encode(encoding = "utf-8")
+   
+        # 发送数据给客户端
+        #tcp_client.send(send_data)
+        '''
+
+        _thread.start_new_thread(print_time, ("Thread-1", 2, ) )
+        #_thread.start_new_thread(print_time, ("Thread-2", 4, ) )
+
         self.tcptimer.start(1000)
         self.start1.setEnabled(False)
         self.end1.setEnabled(True)
-
+       
     def stop2(self):
+        '''
+        # 关闭服务与客户端的套接字， 终止和客户端通信的服务
+        #tcp_client.close()
+   
+        # 关闭服务端的套接字, 终止和客户端提供建立连接请求的服务 但是正常来说服务器的套接字是不需要关闭的，因为服务器需要一直运行。
+        tcp_server.close()
+
+
         #print("开启TCP服务器")
+        '''
         self.tcptimer.stop()
         self.start1.setEnabled(True)
         self.end1.setEnabled(False)
