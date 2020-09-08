@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import sys,_thread
 import random
 import socket
@@ -26,6 +27,8 @@ def readd():
     ex.test.setText(xx)
     #self.test.setText(xx)
 
+
+##使用TCP向go服务器发送消息，并接收前端消息
 def print_time( threadName, delay):
 
     global tcp_server
@@ -38,20 +41,37 @@ def print_time( threadName, delay):
 
     print("wait")
     tcp_client, tcp_client_address= tcp_server.accept()
+    _thread.start_new_thread(js, ("Thread-2", 4, ) )
     count = 0
     while count<5:
+        #tcp_client, tcp_client_address= tcp_server.accept()
         send_data1 = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到"+str(random.randint(0,10))
         global gdata
-        #ss=str(gdata)
+
         send_data=gdata.encode(encoding = "utf-8")
-        print("hello world")
-        print(sys.getsizeof(send_data))
+        print(gdata)
+        gdata=""
+        #print(sys.getsizeof(send_data))
         tcp_client.send(send_data)
         time.sleep(1)
         #count += 1
-        print (time.ctime(time.time()) )
+        #print (time.ctime(time.time()) )
+       
+               
 
 # 创建两个线程
+def js(threadName, delay):
+    global tcp_client
+    while True:
+        if tcp_client:
+            while True:
+                print("chunjian")
+                data= tcp_client.recv(1024).decode('utf-8') 
+                print(data)
+                time.sleep(1)
+                    
+           
+
 
 
 #class Example(QWidget):
@@ -289,10 +309,11 @@ class Example(QMainWindow):
             
             xx=''
             for i in range(5):
-                xx=xx+str(get_real(s,i*4))+"  "
+                xx=xx+str(get_real(s,i*4))+","
             self.test.setText(xx)
             global gdata
             gdata=xx
+            xx=''
         except:
             self.test.setText("连接断开")
             self.state.setStyleSheet("background-color:gray")  #修改连接状态
@@ -354,7 +375,7 @@ class Example(QMainWindow):
         '''
 
         _thread.start_new_thread(print_time, ("Thread-1", 2, ) )
-        #_thread.start_new_thread(print_time, ("Thread-2", 4, ) )
+        #_thread.start_new_thread(js, ("Thread-2", 4, ) )
 
         self.tcptimer.start(1000)
         self.start1.setEnabled(False)
@@ -371,6 +392,10 @@ class Example(QMainWindow):
 
         #print("开启TCP服务器")
         '''
+        global tcp_client
+        global tcp_server
+        tcp_client.close()
+        tcp_server.close()
         self.tcptimer.stop()
         self.start1.setEnabled(True)
         self.end1.setEnabled(False)
