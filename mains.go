@@ -93,7 +93,7 @@ func main() {
 	http.HandleFunc("/xx", sayhelloName) //流程界面路由
 	http.HandleFunc("/qx", qx)           //曲线界面路由
 
-	err := http.ListenAndServe("192.168.1.7:8000", nil) //设置监听的端口
+	err := http.ListenAndServe("192.168.1.9:8000", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -133,7 +133,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 func handleMessages() {
 	for {
-		time.Sleep(time.Duration(100) * time.Millisecond)
+		time.Sleep(time.Duration(1000) * time.Millisecond)
 		// 从广播频道获取下一条消息
 		msg := <-broadcast
 		//将其发送到当前连接的每个客户端
@@ -152,7 +152,7 @@ func handleMessages() {
 //TCP连接函数
 func geet() {
 
-	serverAddr := "127.0.0.1:8000"
+	serverAddr := "192.168.0.3:5000"
 	tcpAddr, err := net.ResolveTCPAddr("tcp", serverAddr)
 	if err != nil {
 		fmt.Println("Resolve TCPAddr error", err)
@@ -167,9 +167,10 @@ func geet() {
 	go func() {
 		for {
 			time.Sleep(time.Duration(100) * time.Millisecond)
-			pp := <-ch2
-
-			conn.Write(pp) //向tcp服务器发送数据
+			pp := <-ch2 //pp是前端传过来的消息
+			//println(pp)
+			//conn.Write(pp) //向tcp服务器发送数据
+			conn.Write(pp)
 		}
 	}()
 	//c := <-ch3
@@ -178,16 +179,21 @@ func geet() {
 
 	for {
 
-		time.Sleep(time.Duration(100) * time.Millisecond) //延时100毫秒
+		time.Sleep(time.Duration(1000) * time.Millisecond) //延时100毫秒
 
 		c := x[1]
 		conn.Read(buffer) //读取TCP发来的数据
+		println(c)
 
-		kk := string(buffer[:c])
-		println("接收的字节长度:" + strconv.Itoa(c))
+		kk := string(buffer[:61])
+		println(kk)
+		println(len(kk))
+		content := kk[1 : (len(kk)-1)/2]
+		println(kk)
+		//println("接收的字节长度:" + strconv.Itoa(63))
 
 		// 将新接收到的消息发送到广播频道
-		broadcast <- kk
+		broadcast <- content
 
 	}
 
