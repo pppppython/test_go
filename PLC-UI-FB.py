@@ -2,11 +2,14 @@
 import sys,_thread
 import random
 import socket
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QLabel,QPushButton,QComboBox
 import snap7
+from snap7.util import *
+from snap7.snap7types import *
 from snap7.util import *
 from snap7.snap7types import *
 from PyQt5.QtGui import QIcon
@@ -34,7 +37,8 @@ def print_time( threadName, delay):
     global tcp_server
     tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcp_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-    tcp_server.bind(("192.168.0.3", 5000))
+    #tcp_server.bind(("192.168.0.3", 5000))
+    tcp_server.bind(("0.0.0.0", 5000))
     tcp_server.listen(20)
     global tcp_client
     global tcp_client_address
@@ -82,7 +86,7 @@ class Example(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.resize(1000, 750)
+        self.resize(1000, 650)
         self.setWindowTitle('plc')
 
         exitAction = QAction(QIcon('exit.png'), '&退出', self)       
@@ -153,9 +157,9 @@ class Example(QMainWindow):
         self.t1.setGeometry(450,120,100,20)
 
         # 单个添加条目
-        self.t1.addItem('浮点数')
-        self.t1.addItem('布尔量')
-        self.t1.addItems(['字', 'C#', 'PHP'])
+        self.t1.addItem('浮点数个数')
+        #self.t1.addItem('布尔量')
+        #self.t1.addItems(['字', 'C#', 'PHP'])
 
         #输入浮点数个数
         self.n1=QLineEdit(self)
@@ -169,11 +173,11 @@ class Example(QMainWindow):
         self.t2.setGeometry(680,120,100,20)
 
         # 单个添加条目
-        self.t2.addItem('浮点数')
-        self.t2.addItem('布尔量')
-        self.t2.addItems(['字', 'C#', 'PHP'])
+        self.t2.addItem('布尔量个数')
+        #self.t2.addItem('布尔量')
+        #self.t2.addItems(['字', 'C#', 'PHP'])
 
-        #输入浮点数个数
+        #输入布尔量个数
         self.n2=QLineEdit(self)
         self.n2.setGeometry(800,120,80,20)
 
@@ -239,10 +243,20 @@ class Example(QMainWindow):
         self.end.clicked.connect(self.endTimer)
         
 
-        #用于展示读取到的数据
+        #用于展示读取到的数据,浮点数
         self.test = QLabel(self)
-        self.test.setGeometry(0, 300, 800, 200)
-        self.test.setStyleSheet("background-color:gray")
+        self.test.setGeometry(0, 300, 900, 50)
+        self.test.setWordWrap(True)
+        #self.test.setStyleSheet("background-color:green")
+        self.test.setStyleSheet("font: bold; font-size:30px;background-color: green")
+
+        #用于展示读取到的数据,布尔量
+        self.test1 = QLabel(self)
+        self.test1.setGeometry(0, 370, 900, 50)
+        self.test1.setWordWrap(True)
+        #self.test.setStyleSheet("background-color:green")
+        self.test1.setStyleSheet("font: bold; font-size:30px;background-color: green")
+
 
         ##pyqt5定时器，用于创建TCP服务器，并发送数据
         self.tcptimer=QTimer()
@@ -257,6 +271,11 @@ class Example(QMainWindow):
         self.end1.setText("关闭TCP服务器")         #按钮文本
         self.end1.move(180,600)                   #按钮位s置
         self.end1.clicked.connect(self.stop2)
+
+        self.qq=QLabel(self)
+        self.qq.setGeometry(320,500,400,100)
+        self.qq.setText('开启TCP服务器后，可访问本机5000端口，获取实时数据')
+        #self.qq.setStyleSheet("font: bold; font-size:20px; color: rgb(241, 70, 62); background-color: green")
 
 
 
@@ -304,16 +323,28 @@ class Example(QMainWindow):
         global plc
         global dbn
         global read__len
-     
+        global n11                      #浮点数个数
+        global n22                      #布尔量个数
+        n222=int(int(n22)/8)           
+        ttt=""
         try:
-            s=plc.read_area(0x84,int(dbn),0,int(read__len))
-            p=(int(read__len))
+            s=plc.read_area(0x84,int(dbn),0,int(n11)*4)
+            p=int(n11)
             xx=''
-            for i in range(int(p/4)):
-                xx=xx+str(get_real(s,i*4))+","
-            self.test.setText(xx)
+            for i in range(p):
+                xx=xx+str(get_real(s,i*4))+"  "   #前端解析要留意
+            
+
+            t=plc.read_area(0x84,int(dbn),int(n11)*4,n222)  #读取DB2，从第0个字节开始，连续读 n222 个字节
+            #tt=get_bool(t,0,0)            #获取读到的数据，获取第0个字节的第01位
+            for i in range(n222):
+                for j in range(8):
+                    tt=str(get_bool(t,i,j))
+                    ttt=ttt+tt+"  "             #前端解析要留意
             global gdata
-            gdata=xx
+            gdata=xx+str(ttt)
+            self.test.setText(xx)
+            self.test1.setText(ttt)
             xx=''
         except:
             self.test.setText("连接断开")
@@ -327,10 +358,14 @@ class Example(QMainWindow):
         
         global dbn
         global read__len
+        global n11
+        global n22
         
-        dbn=self.dblen.text()      #获取待读取的db号
+        dbn=self.dblen.text()                       #获取待读取的db号
         read__len=self.read_len.text()              #获取待读取的字节数
-       
+        n11=self.n1.text()                          #获取浮点数个数
+        n22=self.n2.text()                          #获取布尔量个数，必须位8的倍数
+
         self.timer.start(1000)
         self.start.setEnabled(False)
         self.end.setEnabled(True)
