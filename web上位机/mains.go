@@ -161,7 +161,7 @@ func geet() {
 	}
 	conn, err := net.DialTCP("tcp4", nil, tcpAddr)
 
-	defer conn.Close()
+	//defer conn.Close()   //这句可能会出现bug
 	if err != nil {
 		fmt.Println("连接tcp服务器出错", err)
 	}
