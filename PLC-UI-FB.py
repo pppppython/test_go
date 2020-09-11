@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-import sys,_thread
+import sys
+import threading
 import random
 import socket
 from PyQt5 import QtCore
@@ -14,6 +15,8 @@ from snap7.util import *
 from snap7.snap7types import *
 from PyQt5.QtGui import QIcon
 import time
+global clo
+clo=False
 def pp():
     print("hello")
 
@@ -44,34 +47,53 @@ def print_time( threadName, delay):
     global tcp_client_address
 
     print("wait")
+
+    global xxxx   #允许接收前端消息的标志位
+    xxxx=False
     tcp_client, tcp_client_address= tcp_server.accept()  #程序会在这一步等待客户端连接，有客户端连接后，才会继续运行下去
-    _thread.start_new_thread(js, ("Thread-2", 4, ) )     #开启一个线程，用于接收go服务器发来的消息
+    #_thread.start_new_thread(js, ("Thread-2", 4, ) )     #开启一个线程，用于接收go服务器发来的消息
+    
     count = 0
     while count<5:
+        xxxx=True
         #tcp_client, tcp_client_address= tcp_server.accept()
         send_data1 = "好好的好的，好的，消息已收到的，消息已收到"+str(random.randint(0,10))
         global gdata
 
         send_data=gdata.encode(encoding = "utf-8")
-        print(gdata)
+        #print(gdata)
         gdata=""
-        print(sys.getsizeof(send_data))
+        #print(sys.getsizeof(send_data))
         tcp_client.send(send_data)
         time.sleep(1)
+        global clo
+        if clo:
+            break
 
        
                
 
 # 创建两个线程
-def js(threadName, delay):
+def js():
+    print("开启接收线程")
+   
     global tcp_client
+    global xxxx
     while True:
-        if tcp_client:
+        if xxxx:
+            print("chunjian")
             while True:
-                print("chunjian")
+                if clo:
+                    break
                 data= tcp_client.recv(1024).decode('utf-8') 
                 print(data)
+                ex.rr.setText(data)
                 time.sleep(1)
+
+                if clo:
+                    break
+            break
+
                     
            
 
@@ -241,6 +263,16 @@ class Example(QMainWindow):
         self.end.setText("停止读取")         #按钮文本
         self.end.move(180,150)                   #按钮位s置
         self.end.clicked.connect(self.endTimer)
+
+        self.qqq=QLabel(self)
+        self.qqq.setGeometry(320,300,500,300)
+        self.qqq.setText('注意：DB块应该是浮点数在前，布尔量在后，且布尔量个数应为8的倍数')
+        self.qqq.setStyleSheet("font: bold")
+
+       
+        self.qq=QLabel(self)
+        self.qq.setGeometry(320,500,400,100)
+        self.qq.setText('开启TCP服务器后，可访问本机5000端口，获取实时数据')
         
 
         #用于展示读取到的数据,浮点数
@@ -272,11 +304,24 @@ class Example(QMainWindow):
         self.end1.move(180,600)                   #按钮位s置
         self.end1.clicked.connect(self.stop2)
 
+        #接收前端消息r
+        self.r=QLabel(self)
+        self.r.setGeometry(380,600,200,20)
+        self.r.setText('接收前端消息:')
+        self.r.setStyleSheet("font: bold")
+
+        #展示前端消息r
+        self.rr=QLabel(self)
+        self.rr.setGeometry(500,600,200,20)
+        self.rr.setText('')
+        self.rr.setStyleSheet("font: bold; font-size:20px; color: rgb(241, 70, 62);")
+        
+        '''
         self.qq=QLabel(self)
         self.qq.setGeometry(320,500,400,100)
         self.qq.setText('开启TCP服务器后，可访问本机5000端口，获取实时数据')
         #self.qq.setStyleSheet("font: bold; font-size:20px; color: rgb(241, 70, 62); background-color: green")
-
+        '''
 
 
 
@@ -325,29 +370,37 @@ class Example(QMainWindow):
         global read__len
         global n11                      #浮点数个数
         global n22                      #布尔量个数
-        n222=int(int(n22)/8)           
+        n222=int(int(n22)/8)            #布尔量个数/8=字节数
         ttt=""
         try:
-            s=plc.read_area(0x84,int(dbn),0,int(n11)*4)
+            #读取浮点数
+            s=plc.read_area(0x84,int(dbn),0,int(n11)*4)   #int(n11)*4=字节数
             p=int(n11)
             xx=''
             for i in range(p):
                 xx=xx+str(get_real(s,i*4))+"  "   #前端解析要留意
-            
-
-            t=plc.read_area(0x84,int(dbn),int(n11)*4,n222)  #读取DB2，从第0个字节开始，连续读 n222 个字节
-            #tt=get_bool(t,0,0)            #获取读到的数据，获取第0个字节的第01位
-            for i in range(n222):
-                for j in range(8):
-                    tt=str(get_bool(t,i,j))
-                    ttt=ttt+tt+"  "             #前端解析要留意
-            global gdata
-            gdata=xx+str(ttt)
             self.test.setText(xx)
-            self.test1.setText(ttt)
-            xx=''
+            
+            
         except:
             self.test.setText("连接断开")
+            self.state.setStyleSheet("background-color:gray")  #修改连接状态
+        try:
+            #读取布尔量
+            if n222>0:
+                t=plc.read_area(0x84,int(dbn),int(n11)*4,n222)  #读取DB2，从第0个字节开始，连续读 n222 个字节
+                #tt=get_bool(t,0,0)            #获取读到的数据，获取第0个字节的第01位
+                for i in range(n222):
+                    for j in range(8):
+                        tt=str(get_bool(t,i,j))
+                        ttt=ttt+tt+"  "             #前端解析要留意
+            global gdata
+            gdata=xx+str(ttt)
+            
+            self.test1.setText(ttt)
+            
+        except:
+            self.test1.setText("连接断开")
             self.state.setStyleSheet("background-color:gray")  #修改连接状态
 
     #开始读取计时
@@ -380,29 +433,33 @@ class Example(QMainWindow):
     #会定时运行的函数
     def tcpsend(self):
         pass
+        
 
    
     
     def start2(self):
         #开启TCP服务器线程
-        _thread.start_new_thread(print_time, ("Thread-1", 2, ) )
+        #_thread.start_new_thread(print_time, ("Thread-1", 2, ) )
+        global t1
+        global t2
+        global clo
+        clo=False
 
+        # 创建新线程
+        t1 = threading.Thread(target=print_time, args=("Thread-1", 2, ))
+        t2 = threading.Thread(target=js, args=())
+        #开启线程
+        t1.start()
+        t2.start()
         self.tcptimer.start(1000)
         self.start1.setEnabled(False)
         self.end1.setEnabled(True)
        
     def stop2(self):
-        '''
-        # 关闭服务与客户端的套接字， 终止和客户端通信的服务
-        #tcp_client.close()
-        # 关闭服务端的套接字, 终止和客户端提供建立连接请求的服务 但是正常来说服务器的套接字是不需要关闭的，因为服务器需要一直运行。
-        tcp_server.close()
-        #print("开启TCP服务器")
-        '''
-        global tcp_client
-        global tcp_server
-        tcp_client.close()
-        tcp_server.close()
+        #退出TCP线程的标志位
+        global clo
+        clo=True
+       
         self.tcptimer.stop()
         self.start1.setEnabled(True)
         self.end1.setEnabled(False)
