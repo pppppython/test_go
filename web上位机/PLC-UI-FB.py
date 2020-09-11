@@ -87,7 +87,9 @@ def js():
                     break
                 data= tcp_client.recv(1024).decode('utf-8') 
                 print(data)
+                ex.rr.setText(data)
                 time.sleep(1)
+
                 if clo:
                     break
             break
@@ -431,6 +433,7 @@ class Example(QMainWindow):
     #会定时运行的函数
     def tcpsend(self):
         pass
+        
 
    
     
