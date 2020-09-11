@@ -271,8 +271,9 @@ class Example(QMainWindow):
 
        
         self.qq=QLabel(self)
-        self.qq.setGeometry(320,500,400,100)
-        self.qq.setText('开启TCP服务器后，可访问本机5000端口，获取实时数据')
+        self.qq.setGeometry(320,500,500,100)
+        self.qq.setText('注意：开启TCP服务器后，可访问本机5000端口，获取实时数据')
+        self.qq.setStyleSheet("font: bold")
         
 
         #用于展示读取到的数据,浮点数
@@ -344,7 +345,7 @@ class Example(QMainWindow):
             self.conButton.setEnabled(False)   #一旦连接成功，连接按钮将被屏蔽
             self.closeButton.setEnabled(True)   #一旦连接成功，断开连接按钮将启用
         except:
-            self.state.setStyleSheet("background-color:gray")
+            self.state.setStyleSheet("font: bold;background-color:gray")
     
 
     ##断开连接
