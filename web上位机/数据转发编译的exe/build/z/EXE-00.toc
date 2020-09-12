@@ -1,5 +1,5 @@
 ('C:\\Users\\anshun\\Desktop\\a\\build\\z\\z.exe',
- True,
+ False,
  False,
  True,
  None,
@@ -39,7 +39,7 @@
  [],
  False,
  False,
- 1599916391,
- [('run.exe',
-   'g:\\pyinstall\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\run.exe',
+ 1599917793,
+ [('runw.exe',
+   'g:\\pyinstall\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\runw.exe',
    'EXECUTABLE')])
