@@ -1,20 +1,15 @@
 # -*- coding:utf-8 -*-
-import sys
-import threading
-import random
-import socket
+import sys,os,random,codecs,threading,socket,time
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QAction, qApp, QApplication
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QLabel,QPushButton,QComboBox
+#from PyQt5.QtWidgets import QApplication, QWidget, QLineEdit, QLabel,QPushButton,QComboBox
 import snap7
 from snap7.util import *
 from snap7.snap7types import *
-from snap7.util import *
-from snap7.snap7types import *
 from PyQt5.QtGui import QIcon
-import time
+
 global clo
 clo=False
 def pp():
@@ -29,9 +24,8 @@ def readd():
     xx=''
     for i in range(5):
         xx=xx+str(get_real(s,i*4))+"  "
-    print(xx)
     ex.test.setText(xx)
-    #self.test.setText(xx)
+    
 
 
 ##使用TCP向go服务器发送消息，并接收前端消息
@@ -47,7 +41,7 @@ def print_time( threadName, delay):
     global tcp_client_address
 
     print("wait")
-
+    ex.statusBar().showMessage("开启了TCP服务器，监听本机5000端口",9000)
     global xxxx   #允许接收前端消息的标志位
     xxxx=False
     tcp_client, tcp_client_address= tcp_server.accept()  #程序会在这一步等待客户端连接，有客户端连接后，才会继续运行下去
@@ -73,7 +67,7 @@ def print_time( threadName, delay):
        
                
 
-# 创建两个线程
+# 接收前端消息的线程
 def js():
     print("开启接收线程")
    
@@ -81,12 +75,10 @@ def js():
     global xxxx
     while True:
         if xxxx:
-            print("chunjian")
             while True:
                 if clo:
                     break
                 data= tcp_client.recv(1024).decode('utf-8') 
-                print(data)
                 ex.rr.setText(data)
                 time.sleep(1)
 
@@ -108,8 +100,9 @@ class Example(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.resize(1000, 650)
+        self.resize(1000, 700)
         self.setWindowTitle('plc')
+        self.setWindowIcon(QIcon('./1.ico'))    #设置软件图标
 
         exitAction = QAction(QIcon('exit.png'), '&退出', self)       
         exitAction.setShortcut('Ctrl+Q')
@@ -118,20 +111,20 @@ class Example(QMainWindow):
 
         bxitAction = QAction(QIcon('exit.png'), '&帮助', self)       
         bxitAction.setShortcut('Ctrl+H')
-        bxitAction.setStatusTip('帮助文档')
-        bxitAction.triggered.connect(self.close)
- 
-        #self.statusBar()
-        #self.statusBar.setStyleSheet("background-color:gray")
+        bxitAction.setStatusTip('帮助文档')  #状态栏提示
+        bxitAction.triggered.connect(self.show_child)
+        
+        self.statusBar().showMessage('状态栏',0)
+        self.statusBar().setStyleSheet("background-color:gray")
+
         menubar = self.menuBar()
+        #menubar.setStyleSheet("background-color:gray")
         aMenu = menubar.addMenu('&菜单')
         aMenu.addAction(exitAction)
-        aMenu.addAction(bxitAction)
-
-
         
+        bMenu = menubar.addMenu('&教程')
+        bMenu.addAction(bxitAction)
         
-        #self.test.setText('测试用')
 
         #PLC地址
         # 实例化QLabel对象，文本显示
@@ -151,18 +144,18 @@ class Example(QMainWindow):
         #DB号常量
         self.dbnumber=QLabel(self)
         self.dbnumber.setGeometry(20,120,200,20)
-        self.dbnumber.setText('DB号')
+        self.dbnumber.setText('DB')
         #DB号输入框
         self.dblen=QLineEdit(self)
         self.dblen.setGeometry(50, 120, 60, 20)
 
-        #读取的字节数
+        #读取间隔时间
         self.readlen=QLabel(self)
-        self.readlen.setGeometry(150,120,200,20)
-        self.readlen.setText("读取字节数：")
+        self.readlen.setGeometry(140,120,200,20)
+        self.readlen.setText("读取周期(毫秒)：")
         #读取长度输入框
         self.read_len=QLineEdit(self)
-        self.read_len.setGeometry(250,120,100,20)
+        self.read_len.setGeometry(260,120,100,20)
         
         #读取数据类型，文本常量
         self.readtype=QLabel(self)
@@ -271,8 +264,9 @@ class Example(QMainWindow):
 
        
         self.qq=QLabel(self)
-        self.qq.setGeometry(320,500,400,100)
-        self.qq.setText('开启TCP服务器后，可访问本机5000端口，获取实时数据')
+        self.qq.setGeometry(320,500,500,100)
+        self.qq.setText('注意：开启TCP服务器后，可访问本机5000端口，获取实时数据')
+        self.qq.setStyleSheet("font: bold")
         
 
         #用于展示读取到的数据,浮点数
@@ -343,8 +337,11 @@ class Example(QMainWindow):
             self.state.setStyleSheet("background-color:green")
             self.conButton.setEnabled(False)   #一旦连接成功，连接按钮将被屏蔽
             self.closeButton.setEnabled(True)   #一旦连接成功，断开连接按钮将启用
+            #self.s.setStatusTip('退出软件')
+            self.statusBar().showMessage('ip：'+ip+"  "+"连接成功",9000)
         except:
-            self.state.setStyleSheet("background-color:gray")
+            self.state.setStyleSheet("font: bold;background-color:gray")
+            self.statusBar().showMessage('ip'+ip+"连接失败",9000)
     
 
     ##断开连接
@@ -354,6 +351,7 @@ class Example(QMainWindow):
         self.conButton.setEnabled(True)   
         self.closeButton.setEnabled(False)   
         self.state.setStyleSheet("background-color:gray")  #修改连接状态
+        self.statusBar().showMessage("断开连接")
         
 
     #定时读取函数，并刷新
@@ -367,7 +365,6 @@ class Example(QMainWindow):
 
         global plc
         global dbn
-        global read__len
         global n11                      #浮点数个数
         global n22                      #布尔量个数
         n222=int(int(n22)/8)            #布尔量个数/8=字节数
@@ -405,21 +402,20 @@ class Example(QMainWindow):
 
     #开始读取计时
     def startTimer(self):
-        print('lalala')
-
         ##开始定时读取之前，获取读取参数
-        
         global dbn
-        global read__len
         global n11
         global n22
         
         dbn=self.dblen.text()                       #获取待读取的db号
-        read__len=self.read_len.text()              #获取待读取的字节数
+        read__len=self.read_len.text()              #获取读取周期
         n11=self.n1.text()                          #获取浮点数个数
         n22=self.n2.text()                          #获取布尔量个数，必须位8的倍数
+        
+        if not read__len:
+            read__len=500
 
-        self.timer.start(1000)
+        self.timer.start(int(read__len))                       #读取间隔时间，单位毫秒
         self.start.setEnabled(False)
         self.end.setEnabled(True)
 
@@ -438,14 +434,14 @@ class Example(QMainWindow):
    
     
     def start2(self):
-        #开启TCP服务器线程
+        
         #_thread.start_new_thread(print_time, ("Thread-1", 2, ) )
         global t1
         global t2
         global clo
         clo=False
 
-        # 创建新线程
+        #创建TCP服务器线程
         t1 = threading.Thread(target=print_time, args=("Thread-1", 2, ))
         t2 = threading.Thread(target=js, args=())
         #开启线程
@@ -463,7 +459,33 @@ class Example(QMainWindow):
         self.tcptimer.stop()
         self.start1.setEnabled(True)
         self.end1.setEnabled(False)
+        self.statusBar().showMessage("关闭了TCP服务器",9000)
 
+    #打开子窗口的函数
+    def show_child(self):
+        self.child_window = Child()
+        self.child_window.show()
+
+
+#定义子窗口
+class Child(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("使用教程")
+        self.resize(800, 600)
+        self.setFixedSize(self.width(), self.height())
+        #教程文本
+        self.ber=QLabel(self)
+        self.ber.setGeometry(50,0,700,500)
+       
+        
+        
+        with open("2.txt", encoding="utf-8") as f:
+            self.ber.setText(f.read())
+        #print(open("2.txt", encoding="gbk").read())
+        
+
+        
 
         
     
