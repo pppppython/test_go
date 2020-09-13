@@ -166,7 +166,7 @@
         link();
     })
     function link () {
-        ws = new WebSocket("ws://192.168.1.7:8000/ws");//连接服务器
+        ws = new WebSocket("ws://192.168.1.9:8000/ws");//连接服务器
         //ws = new WebSocket("ws://localhost:8000/ws");//连接服务器
         ws.onopen = function(event){
             //console.log(event);
@@ -178,10 +178,11 @@
             var date = new Date();
             var msg = "<p>"+date.toLocaleString()+"</p>"+"<p>"+event.data+"</p>";
             $("#msgArea").append(msg);
+            //var arr3=event.data
             var arr3=event.data.split(" ");
             //arr3=event.data.split(" ");
-            arr3.shift()  //删除数组第一个元素
-            //alert(arr3)
+            //arr3.shift()  //删除数组第一个元素
+            
             //arr3.pop();   //删除数组最后一个元素
             /*
             document.getElementById("te1").innerHTML =arr3[0]
@@ -210,9 +211,20 @@
                  
                     
                     {   
+                        if  (document.getElementById(th[i])!='button')
+                        {
                         document.getElementById(th[i]).innerHTML =arr3[i]      //那么就赋值
+                        }else{
+                            if (arr3[i]==1)
+                            {
+                            document.getElementById("kkk").style.backgroundColor='green'    //修改按钮的背景颜色
+                            }else{
+                                document.getElementById("kkk").style.backgroundColor='white'    //修改按钮的背景颜色
+                            }
+                        }
+
                        
-                        //针对模拟量
+                        //给所有前面板控件赋值
                         if (document.getElementById(th[i]+"_"))
                         {
                             if (document.getElementById(th[i]+"_").tagName=='P')     //如果找到的标签为P
@@ -231,8 +243,10 @@
             if (c)     //如果布尔弹窗打开
             
             {
-                var a=arr3[t1[0]+1]
-                var b=arr3[t1[1]+1]
+                var a=arr3[t1[0]+1]     //从arr3中 获取开反馈的值
+                var b=arr3[t1[1]+1]     //从arr3中 获取关反馈的值
+                var c=arr3[t1[2]+1]     //从arr3中 获取开指令的值
+                var d=arr3[t1[3]+1]     //从arr3中 获取关指令的值
                 
                 //document.getElementById(kkk[0]+"k1").innerHTML =a;
                 //document.getElementById(kkk[0]+"g1").innerHTML =b
@@ -258,6 +272,19 @@
                 }
 
                 //修改控制按钮的背景颜色
+                //修改开按钮的背景颜色
+                if (c==1){
+                    //此处修改开按钮的背景颜色
+                }
+
+                //修改关按钮的背景颜色
+                if (d==1){
+                    //此处修改关按钮的背景颜色
+                }
+
+
+
+
             }
 
 
@@ -282,8 +309,8 @@
     function KsendMsg(){
         
         ws.send(kkk[0]+1);     //kkk[0]是当前开关阀工位号
-        document.getElementById("kkk").style.backgroundColor='green'      //修改按钮的背景颜色
-        document.getElementById("ggg").style.backgroundColor='white'      //修改按钮的背景颜色
+        document.getElementById(ii+"kc").style.backgroundColor='green'      //修改按钮的背景颜色
+        document.getElementById(ii+"gc").style.backgroundColor='white'      //修改按钮的背景颜色
     }
 
 
@@ -291,8 +318,8 @@
     function gsendMsg(){
        
         ws.send(kkk[0]+0);     //kkk[0]是当前开关阀工位号
-        document.getElementById("kkk").style.backgroundColor='white'    //修改按钮的背景颜色
-        document.getElementById("ggg").style.backgroundColor='green'    //修改按钮的背景颜色
+        document.getElementById(ii+"kc").style.backgroundColor='white'    //修改按钮的背景颜色
+        document.getElementById(ii+"gc").style.backgroundColor='green'    //修改按钮的背景颜色
     }
 
 
@@ -415,15 +442,17 @@
         //alert(ii)
         var s1=th.indexOf(ii+"k")     //获取开反馈在配置文件中的索引
         var s2=th.indexOf(ii+"g")     //获取关反馈在配置文件中的索引
-        t1.unshift(s1,s2);             //t1存储了反馈工位的索引
+        var s3=th.indexOf(ii+"kc")     //获取开指令在配置文件中的索引
+        var s4=th.indexOf(ii+"gc")     //获取关指令在配置文件中的索引
+        t1.unshift(s1,s2,s3,s4);             //t1存储了反馈工位以及控制工位在配置文件中的索引
         document.getElementById($(e.target).attr('id')).id="ff"; //修改主界面按钮id
         document.getElementById("k").id=ii+"k1";                                   //修改开反馈按钮id  在原id后面加上1
-        document.getElementById("g").id=ii+"g1";                                   //修改关反馈按钮id
+        document.getElementById("g").id=ii+"g1";                                   //修改关反馈按钮id  在原id后面加上1
                                                        
         document.getElementById("bo").innerHTML=ii+"开关阀";                       //修改阀门弹窗标题
 
-        //document.getElementById("kkk").id=ii+"kkk";                                  //修改控制按钮的背景颜色，确保所有上位机显示一致
-        //document.getElementById("ggg").id=ii+"ggg";                                  //修改控制按钮的背景颜色，确保所有上位机显示一致
+        document.getElementById("kkk").id=ii+"kc";                                  //修改控制按钮的背景颜色，确保所有上位机显示一致
+        document.getElementById("ggg").id=ii+"gc";                                  //修改控制按钮的背景颜色，确保所有上位机显示一致
 
 
         c=true     //打开开关阀弹窗后，标志位置为True
@@ -434,6 +463,9 @@
     function pppsk(){
         document.getElementById(kkk[0]+"k1").id="k"; //将开反馈按钮id还原
         document.getElementById(kkk[0]+"g1").id="g"; //将关反馈按钮id还原
+
+        document.getElementById(kkk[0]+"kc").id="kkk"; //将开反馈按钮id还原
+        document.getElementById(kkk[0]+"gc").id="ggg"; //将关反馈按钮id还原
         
         document.getElementById("ff").id=String(kkk[0]); //将主界面按钮id还原
         $("#botc").attr("style","display:none;");//显示div

@@ -70,7 +70,6 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 				log.Printf("error: %v", err)
 				delete(clients, ws)
 				break
-
 		*/
 
 		//rr := make([]byte, 10)

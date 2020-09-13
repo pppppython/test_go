@@ -40,22 +40,21 @@ def print_time( threadName, delay):
     global tcp_client_address
 
     print("wait")
-    tcp_client, tcp_client_address= tcp_server.accept()
-    _thread.start_new_thread(js, ("Thread-2", 4, ) )
+    tcp_client, tcp_client_address= tcp_server.accept()  #程序会在这一步等待客户端连接，有客户端连接后，才会继续运行下去
+    _thread.start_new_thread(js, ("Thread-2", 4, ) )     #开启一个线程，用于接收go服务器发来的消息
     count = 0
     while count<5:
         #tcp_client, tcp_client_address= tcp_server.accept()
-        send_data1 = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到"+str(random.randint(0,10))
+        send_data1 = "好好的好的，好的，消息已收到的，消息已收到"+str(random.randint(0,10))
         global gdata
 
         send_data=gdata.encode(encoding = "utf-8")
         print(gdata)
         gdata=""
-        #print(sys.getsizeof(send_data))
+        print(sys.getsizeof(send_data))
         tcp_client.send(send_data)
         time.sleep(1)
-        #count += 1
-        #print (time.ctime(time.time()) )
+
        
                
 
@@ -343,39 +342,15 @@ class Example(QMainWindow):
         self.end.setEnabled(False)
 
 
-    #tcp推送函数
+    #会定时运行的函数
     def tcpsend(self):
         pass
-        '''
-        try:
-            tcp_client, tcp_client_address= tcp_server.accept()
-            send_data = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到".encode(encoding = "utf-8")
-            tcp_client.send(send_data)
-        except:
-            print("nonono")
-        '''
+
    
     
     def start2(self):
-        '''
-        #print("开启TCP服务器")
-        global tcp_server
-        tcp_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-        tcp_server.bind(("", 8000))
-        tcp_server.listen(2)
-        global tcp_client, tcp_client_address
-
-        #tcp_client, tcp_client_address= tcp_server.accept()
-        # 准备要发送给服务器的数据
-        #send_data = "好好的好的，好的，消息已收到好的，消息已收到消息已收到，消息已收到的，消息已收到".encode(encoding = "utf-8")
-   
-        # 发送数据给客户端
-        #tcp_client.send(send_data)
-        '''
-
+        #开启TCP服务器线程
         _thread.start_new_thread(print_time, ("Thread-1", 2, ) )
-        #_thread.start_new_thread(js, ("Thread-2", 4, ) )
 
         self.tcptimer.start(1000)
         self.start1.setEnabled(False)
@@ -385,11 +360,8 @@ class Example(QMainWindow):
         '''
         # 关闭服务与客户端的套接字， 终止和客户端通信的服务
         #tcp_client.close()
-   
         # 关闭服务端的套接字, 终止和客户端提供建立连接请求的服务 但是正常来说服务器的套接字是不需要关闭的，因为服务器需要一直运行。
         tcp_server.close()
-
-
         #print("开启TCP服务器")
         '''
         global tcp_client

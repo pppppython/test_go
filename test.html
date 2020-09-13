@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Highcharts 教程 | 菜鸟教程(runoob.com)</title>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script></head>
+<body>
+<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+<script language="JavaScript">
+
+   
+
+var i=1;
+var chart = Highcharts.chart('container', {
+  
+   chart: {
+		type: 'spline',
+      marginRight: 10,
+   },
+		
+		series: [{name:"wendu",
+			data: [1,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+		},
+      {
+			data: [1,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+		},
+      ]
+
+
+	});
+function myfun() {
+   if (i<2){
+  
+   };
+   chart.series[0].addPoint(Math.random(), true, true);
+   chart.series[1].addPoint(Math.random(), true, true);
+		i += 1;
+      setTimeout(myfun, 1000);
+}
+// 用js实现在加载完成一个页面后自动执行一个方法
+/*用window.onload调用myfun()*/
+window.onload=myfun;//不要括号
+
+
+</script>
+</body>
+</html>

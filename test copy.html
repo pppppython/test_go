@@ -1,0 +1,100 @@
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Highcharts 教程 | 菜鸟教程(runoob.com)</title>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script></head>
+<body>
+<div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+<script language="JavaScript">
+/*
+Highcharts.setOptions({
+	global: {
+		useUTC: false
+	}
+});
+*/
+
+var chart = Highcharts.chart('container', {
+	chart: {
+		type: 'spline',
+		marginRight: 10,
+		events: {
+			load: function () {
+				var 
+				chart = this,
+					series = chart.series;
+
+				setInterval(function () {
+					var x = (new Date()).getTime(), // 当前时间
+						y = Math.random(),
+						y1 = Math.random();
+                  alert(y);
+					series[0].addPoint([x, y], false, true);
+					series[1].addPoint([x, y1], true, true);
+					//activeLastPointToolip(chart);
+				}, 1000);
+			}
+		}
+	},
+	title: {
+		text: '动态模拟实时数据'
+	},
+	xAxis: {
+		type: 'datetime',
+		tickPixelInterval: 150
+	},
+	yAxis: {
+		title: {
+			text: null
+		}
+	},
+	tooltip: {
+		shared: true,
+		pointFormatter: function () {
+			let s = '<b>' + this.series.name + '：' +'</b>' + Highcharts.numberFormat(this.y, 2) + '<br/>';
+			//let t = Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x);
+			return s;
+		}
+	},
+	legend: {
+		enabled: true
+	},
+	exporting: {        enabled: false
+			   },    
+	series: [{
+		name: 'PM2.5',
+		data: (function () {
+			// 生成随机值
+			var data = [],
+				time = (new Date()).getTime(),
+				i;
+			for (i = -19; i <= 0; i += 1) {
+				data.push({
+					x: time + i * 1000,
+					y: Math.random()
+				});
+			}
+			return data;
+		}())
+	},
+			 {
+				 name: 'PM10',
+				 data: (function () {
+					 // 生成随机值
+					 var data = [],
+						 time = (new Date()).getTime(),
+						 i;
+					 for (i = -19; i <= 0; i += 1) {
+						 data.push({
+							 x: time + i * 1000,
+							 y: Math.random()
+						 });
+					 }
+					 return data;
+				 }())
+			 }]
+});
+</script>
+</body>
+</html>

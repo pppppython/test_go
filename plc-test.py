@@ -25,7 +25,7 @@ def floatToBytes(f):
 def writefloat(a,b,c,f):
     bb=floatToBytes(f)          
     plc.write_area(a,b,c*4,bytearray([bb[0], bb[1], bb[2], bb[3]]))    #写入浮点数
-writefloat(0x84,1,0,90999)
+writefloat(0x84,1,8,90999)
 
 
 #读取布尔量，一次最少读8个布尔量，等于1个字节
@@ -40,16 +40,16 @@ print(readbool(0x84,2,0,1,0,6))
 
 
 #写入布尔量
-# a为0X84，b为DB号，c为从第几个字节开始读，d为读多少个字节
+# a为0X84，DB为DB号，c为从第几个字节开始读，d为读多少个字节
 # e待修改的那个位的索引,f为要修改成的值
-def writebool(a,b,c,d,e,f):
-    t=plc.read_area(a,b,c,d)   #读取DB3从第0个字节开始，连续的1个字节
+def writebool(a,DB,start,len,index,value):
+    t=plc.read_area(a,DB,start,len)   #读取DB3从第0个字节开始，连续的1个字节
     p=str(bin(t[0])[2:].zfill(8))
     q=p[::-1]
     qw=list(q)
-    qw[e]=f
+    qw[index]=value
     r=''.join(qw)
     xx=int(r[::-1],2)
     y=bytearray([xx])  #将这4个十进制数转化为bytearray，一个十进制数代表8个布尔量
-    plc.write_area(a,b,c,y)      #将bytearray写入DB3，从0开始写入
-writebool(0x84,3,0,1,7,"0")
+    plc.write_area(a,DB,start,y)      #将bytearray写入DB3，从0开始写入
+writebool(0x84,2,0,1,4,"1")          #
