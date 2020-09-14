@@ -445,13 +445,15 @@ class Example(QMainWindow):
         timeDisplay = time.toString("yyyy-MM-dd hh:mm:ss dddd")
 
         #dbn=self.dblen.text()      #获取输入的db号
-        
-
         global plc
         global dbn
         global n11                      #浮点数个数
         global n22                      #布尔量个数
-        n222=int(int(n22)/8)            #布尔量个数/8=字节数
+        try:
+            n222=int(int(n22)/8)            #布尔量个数/8=字节数
+        except:
+            self.test.setText("未设置参数")
+        
         ttt=""
         try:
             #读取浮点数
@@ -502,6 +504,7 @@ class Example(QMainWindow):
         self.timer.start(int(read__len))                       #读取间隔时间，单位毫秒
         self.start.setEnabled(False)
         self.end.setEnabled(True)
+        
 
     #停止读取计时
     def endTimer(self):
@@ -555,29 +558,33 @@ class Example(QMainWindow):
         global plc
         global dbn
         z11=self.z1.currentText()   #获取将要写入的类型
-        z22=int(self.z2.text())    #获取将要写入第几个,从1开始数
+        try:
+            z22=int(self.z2.text())    #获取将要写入第几个,从1开始数
+        except:
+            self.statusBar().showMessage("参数错误",9000)
         z33=self.z3.text()   #获取将要写入的值
         
         if z11=="浮点数":
-            writefloat(0x84,int(dbn),int(z22)-1,float(z33))
+            try:
+                writefloat(0x84,int(dbn),int(z22)-1,float(z33))
+            except:
+                self.statusBar().showMessage("参数错误",9000)
         if z11=="布尔量":
-            global n11      #获取布尔量之前有多少个浮点数
-            npt=int(n11)*4       #计算浮点数所占字节
-            k1=int(z22/8)   #计算待写入的值在哪一个字节里面
-            k2=z22%8        #计算待写入的值在所属字节的第几位
+            try:
+                global n11      #获取布尔量之前有多少个浮点数
+                npt=int(n11)*4       #计算浮点数所占字节
+                k1=int(z22/8)   #计算待写入的值在哪一个字节里面
+                k2=z22%8        #计算待写入的值在所属字节的第几位
             
-            if k2==0:
-                writebool(0x84,int(dbn),npt+k1-1,1,7,z33)
-            if k2>0:
-                #print("hello world")
-                writebool(0x84,int(dbn),npt+k1,1,k2-1,z33)
+                if k2==0:
+                    writebool(0x84,int(dbn),npt+k1-1,1,7,z33)
+                if k2>0:
+                    #print("hello world")
+                    writebool(0x84,int(dbn),npt+k1,1,k2-1,z33)
+            except:
+                self.statusBar().showMessage("参数错误",9000)
 
         
-        
-
-
-
-
 #定义子窗口
 class Child(QWidget):
     def __init__(self):
