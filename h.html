@@ -83,21 +83,23 @@
 <!--一个被隐藏的弹窗-->
 <!--调节阀弹窗-->
 <div id="tc" style="display:none;">
+    <button style="float: right;" type="button" onclick="ppps()">关闭弹窗</button>
     <h5 id="gw">阀门开度</h5>
     <p id="tt">你是看不见我的</p>
     <h5>开度设定</h5>
     <p id="tt1">你是看不见我的</p>
     
     <div style="width:100%;height: 100%;">
-        <input id="userMsg" style="width:100%;height: 50px;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></input>
+        <input id="userMsg" style="width:50%;height: 20px;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;float: left;"></input>
         <button style="float: right;" onclick="sendMsg()">发送</button>
-        <button type="button" onclick="ppps()">关闭弹窗</button>
+        
     </div>
     
 </div>
 
 <!--开关阀弹窗-->
 <div id="botc" style="display:none;width: 300px;height: 200px;">
+    <button style="float: right;" type="button" onclick="pppsk()">关闭弹窗</button>
     <h5 id="bo">阀门状态</h5>
     <p id="kdw">你是看不见我的</p>              <!--开到位-->
     <p id="gdw">你是看不见我的</p>              <!--关到位-->
@@ -106,7 +108,7 @@
     
     
        
-    <button type="button" onclick="pppsk()">关闭弹窗</button>
+    
 </div>
 
 
