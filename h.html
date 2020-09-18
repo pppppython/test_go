@@ -97,17 +97,16 @@
 </div>
 
 <!--开关阀弹窗-->
-<div id="botc" style="display:none;">
+<div id="botc" style="display:none;width: 300px;height: 200px;">
     <h5 id="bo">阀门状态</h5>
     <p id="kdw">你是看不见我的</p>              <!--开到位-->
     <p id="gdw">你是看不见我的</p>              <!--关到位-->
-    <button style="float: right;" id="k" onclick="KsendMsg()">开</button>
-    <button style="float: right;" id="g" onclick="gsendMsg()">关</button>
+    <button style="float: right;width: 100px;height: 40px;" id="g" onclick="gsendMsg()">关</button>
+    <button style="float: right;width: 100px;height: 40px;" id="k" onclick="KsendMsg()">开</button>
+    
     
        
     <button type="button" onclick="pppsk()">关闭弹窗</button>
-    
-    
 </div>
 
 
@@ -306,7 +305,7 @@
                         document.getElementById("k").style.backgroundColor='green'
                            
                 }else{
-                    document.getElementById("k").style.backgroundColor='blue'
+                    document.getElementById("k").style.backgroundColor='white'
                     
                     //此处修改开按钮的背景颜色
                 }
@@ -316,7 +315,7 @@
                     document.getElementById("g").style.backgroundColor='green'
                            
                         }else{
-                            document.getElementById("g").style.backgroundColor='blue'
+                            document.getElementById("g").style.backgroundColor='white'
                     //此处修改关按钮的背景颜色
                 }
 
@@ -393,7 +392,7 @@
        //document.getElementById($(e.target).attr('id')).id="freightaccountdo"; //修改按钮id
        document.getElementById("tt").id=ii+"_f1";                     //反馈工位号
        cars.push(ii)                                                  //向工位数组添加一个工位号
-       document.getElementById("gw").innerHTML=ii+"调节阀";           //弹窗名字
+       document.getElementById("gw").innerHTML=ii+"调节阀开度反馈";           //弹窗名字
        document.getElementById("tt1").id=ii+"_c1";                   //开度设定工位号
        b=true     //打开弹窗后，标志位置为True
        }
@@ -509,6 +508,7 @@
         
        // document.getElementById("ff").id=String(kkk[0]); //将主界面按钮id还原
         $("#botc").attr("style","display:none;");//显示div
+        t1.length = 0;
         c=false;                       //关闭弹窗后，弹窗标志位置为false
         
     }
