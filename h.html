@@ -58,11 +58,6 @@
         <p id="kv6_k">春江花月夜</p>
         <p id="kv6_g">春江花月夜</p>
 
-
-       
-   
-        
-
         
     </div>
     <h4>输入消息</h4>
@@ -339,7 +334,7 @@
     //调节阀发送控制消息的函数
     function sendMsg(){
         var msg = $("#userMsg").val();
-        ws.send(ppp[0]+msg);     //ppp[0]是当前工位号
+        ws.send(ppp[0]+"_c+"+msg);     //ppp[0]是当前工位号
         $("#userMsg").val("");  //清空输入框的值
         document.getElementById("tt1").innerHTML=msg;
     }
@@ -484,7 +479,7 @@
         var s3=th.indexOf(ii+"_k")             //获取开指令在配置文件中的索引
         var s4=th.indexOf(ii+"_g")            //获取关指令在配置文件中的索引
         t1.unshift(s1,s2,s3,s4);             //t1存储了反馈工位以及控制工位在配置文件中的索引
-        alert(t1);
+        //alert(t1);
         //document.getElementById($(e.target).attr('id')).id="ff"; //修改主界面按钮id
         //document.getElementById("kdw").id=ii+"_kdw1";                               //修改成当前阀门开反馈按钮id  
         //document.getElementById("gdw").id=ii+"_gdw1";                               //修改关当前阀门关反馈按钮id  

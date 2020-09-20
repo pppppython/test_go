@@ -88,7 +88,7 @@ def print_time( threadName, delay):
         gdata=""
         #print(sys.getsizeof(send_data))
         tcp_client.send(send_data)
-        time.sleep(1)
+        time.sleep(0.2)
         global clo
         if clo:
             break
@@ -99,16 +99,31 @@ def print_time( threadName, delay):
 # 接收前端消息的线程
 def js():
     print("开启接收线程")
-   
+    global plc
+    global dbn
+    global n11                      #浮点数个数
+    global n22                      #布尔量个数   n222=int(int(n22)/8) 
     global tcp_client
     global xxxx
+    global pz
+    pzlong=len(pz)
     while True:
         if xxxx:
             while True:
                 if clo:
                     break
                 data= tcp_client.recv(1024).decode('utf-8') 
+                #打印前端消息
                 ex.rr.setText(data)
+                print(data.split('+', 1 )) # 以+为分隔符，分隔成两个
+                  
+                h=pz.index(data.split('+', 1 )[0])              #阀门在配置表内的索引
+                if h<=int(n11):                               #说明应该写入浮点数
+                    writefloat(0x84,int(dbn),h+1,float(data.split('+', 1 )[1]))
+
+
+                #writebool(a,DB,start,len,index,value)         #写入布尔量
+                #writefloat(a,b,c,f)                           #写入模拟量
                 time.sleep(1)
 
                 if clo:
@@ -339,6 +354,13 @@ class Example(QMainWindow):
         self.w10.clicked.connect(self.wri)   #给按钮绑定事件
         self.w10.move(550,390) 
         
+        #读取配置文件的按钮
+        self.w11=QPushButton(self)
+        self.w11.setText("读取配置文件")
+        self.w11.clicked.connect(self.dq)
+        self.w11.move(680,390)
+
+
         '''
         #待写入DB号
         self.dbnumber=QLabel(self)
@@ -399,7 +421,7 @@ class Example(QMainWindow):
         '''
 
 
-
+        #读取配置文件
 
         self.show()
 
@@ -583,7 +605,20 @@ class Example(QMainWindow):
                     writebool(0x84,int(dbn),npt+k1,1,k2-1,z33)
             except:
                 self.statusBar().showMessage("参数错误",9000)
+    
+    #读取配置文件的函数
+    def dq(self):
+        with open("1.txt",encoding="utf-8") as y:
+            global pz
+            pz=[]
+            lines = y.readlines()     
+            for line in lines:
+                pz.append(line.strip('\n'))    #去掉换行符
+            print(pz)
 
+
+
+        
         
 #定义子窗口
 class Child(QWidget):
