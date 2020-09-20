@@ -106,9 +106,16 @@ def js():
     global tcp_client
     global xxxx
     global pz
-    z22=int(n22)                   #布尔量个数转为int
-    pzlong=len(pz)
+   
+    pzlong=len(pz)                 #计算配置表长度个数
+    npt=int(n11)*4                 #计算浮点数所占字节
+    bb=pz[int(n11):]
     while True:
+        try:
+            if xxxx:
+                pass
+        except:
+            continue
         if xxxx:
             while True:
                 if clo:
@@ -116,44 +123,34 @@ def js():
                 data= tcp_client.recv(1024).decode('utf-8') 
                 #打印前端消息
                 ex.rr.setText(data)
-                print(data.split('+', 1 )) # 以+为分隔符，分隔成两个
+                #print(data.split('+', 1 )) # 以+为分隔符，分隔成两个
                   
                 h=pz.index(data.split('+', 1 )[0])              #阀门在配置表内的索引
-                if h<=int(n11):                               #说明应该写入浮点数
-                    writefloat(0x84,int(dbn),h+1,float(data.split('+', 1 )[1]))
-                else:
-                    #writebool(0x84,int(dbn),start,len,index,value)         #写入布尔量
-
+                
+                if h+1<=int(n11):                               #说明应该写入浮点数
+                    writefloat(0x84,int(dbn),h,float(data.split('+', 1 )[1]))
+                else:                                           
                     try:
+                        h1=bb.index(data.split('+', 1 )[0])+1
+                        #global n11      #获取布尔量之前有多少个浮点数
                         npt=int(n11)*4       #计算浮点数所占字节
-                        k1=int((h-z22)/8)   #计算待写入的值在哪一个字节里面
-                        k2=(h-z22)%8-1        #计算待写入的值在所属字节的第几位，余数从1开始，索引从0开始，所以要-1
-                        print(k2)
+                        k1=int(h1/8)   #计算待写入的值在哪一个字节里面
+                        k2=(h1)%8        #计算待写入的值在所属字节的第几位
             
                         if k2==0:
-                            writebool(0x84,int(dbn),npt+k1-1,1,7,data.split('+', 1 )[1]) #db，db号，start，long，value
+                            writebool(0x84,int(dbn),npt+k1-1,1,7,data.split('+', 1 )[1])
                         if k2>0:
                             #print("hello world")
                             writebool(0x84,int(dbn),npt+k1,1,k2-1,data.split('+', 1 )[1])
                     except:
                         pass
-
-
-
-
-
-
-
-
-
-
-                #writebool(a,DB,start,len,index,value)         #写入布尔量
-                #writefloat(a,b,c,f)                           #写入模拟量
-                time.sleep(1)
+                    
+                time.sleep(0.1)
 
                 if clo:
                     break
             break
+        
 
 #class Example(QWidget):
 class Example(QMainWindow):
@@ -662,12 +659,6 @@ class Child(QWidget):
             self.ber.setText(f.read())
         #print(open("2.txt", encoding="gbk").read())
         
-
-        
-
-        
-    
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

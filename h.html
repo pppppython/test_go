@@ -253,9 +253,9 @@
                         }else{
                             if (arr3[i]==True)                                 //如果找到的是按钮
                             {
-                            document.getElementById("kkk").style.backgroundColor='green'    //修改按钮的背景颜色
+                            //document.getElementById("kkk").style.backgroundColor='green'    //修改按钮的背景颜色
                             }else{
-                                document.getElementById("kkk").style.backgroundColor='white'    //修改按钮的背景颜色
+                                //document.getElementById("kkk").style.backgroundColor='white'    //修改按钮的背景颜色
                             }
                         }
 
@@ -341,7 +341,7 @@
 
     //开关阀发送控制消息的函数,开阀门
     function KsendMsg(){
-        
+        ws.send(kkk[0]+"_g+"+0);     //kkk[0]是当前开关阀工位号,如果开关阀是双bool控制，开之前，向把关bool取消
         ws.send(kkk[0]+"_k+"+1);     //kkk[0]是当前开关阀工位号
         document.getElementById(ii+"kc").style.backgroundColor='green'      //修改按钮的背景颜色
         document.getElementById(ii+"gc").style.backgroundColor='white'      //修改按钮的背景颜色
@@ -350,8 +350,8 @@
 
     //开关阀发送控制消息的函数,关阀门
     function gsendMsg(){
-       
-        ws.send(kkk[0]+"_g+"+0);     //kkk[0]是当前开关阀工位号
+        ws.send(kkk[0]+"_k+"+0);     //kkk[0]是当前开关阀工位号，如果开关阀是双bool控制，关之前，向把开bool取消
+        ws.send(kkk[0]+"_g+"+1);     //kkk[0]是当前开关阀工位号
         document.getElementById(ii+"kc").style.backgroundColor='white'    //修改按钮的背景颜色
         document.getElementById(ii+"gc").style.backgroundColor='green'    //修改按钮的背景颜色
     }
