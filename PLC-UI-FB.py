@@ -106,6 +106,7 @@ def js():
     global tcp_client
     global xxxx
     global pz
+    z22=int(n22)                   #布尔量个数转为int
     pzlong=len(pz)
     while True:
         if xxxx:
@@ -120,6 +121,30 @@ def js():
                 h=pz.index(data.split('+', 1 )[0])              #阀门在配置表内的索引
                 if h<=int(n11):                               #说明应该写入浮点数
                     writefloat(0x84,int(dbn),h+1,float(data.split('+', 1 )[1]))
+                else:
+                    #writebool(0x84,int(dbn),start,len,index,value)         #写入布尔量
+
+                    try:
+                        npt=int(n11)*4       #计算浮点数所占字节
+                        k1=int((h-z22)/8)   #计算待写入的值在哪一个字节里面
+                        k2=(h-z22)%8-1        #计算待写入的值在所属字节的第几位，余数从1开始，索引从0开始，所以要-1
+                        print(k2)
+            
+                        if k2==0:
+                            writebool(0x84,int(dbn),npt+k1-1,1,7,data.split('+', 1 )[1]) #db，db号，start，long，value
+                        if k2>0:
+                            #print("hello world")
+                            writebool(0x84,int(dbn),npt+k1,1,k2-1,data.split('+', 1 )[1])
+                    except:
+                        pass
+
+
+
+
+
+
+
+
 
 
                 #writebool(a,DB,start,len,index,value)         #写入布尔量

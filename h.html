@@ -342,7 +342,7 @@
     //开关阀发送控制消息的函数,开阀门
     function KsendMsg(){
         
-        ws.send(kkk[0]+1);     //kkk[0]是当前开关阀工位号
+        ws.send(kkk[0]+"_k+"+1);     //kkk[0]是当前开关阀工位号
         document.getElementById(ii+"kc").style.backgroundColor='green'      //修改按钮的背景颜色
         document.getElementById(ii+"gc").style.backgroundColor='white'      //修改按钮的背景颜色
     }
@@ -351,7 +351,7 @@
     //开关阀发送控制消息的函数,关阀门
     function gsendMsg(){
        
-        ws.send(kkk[0]+0);     //kkk[0]是当前开关阀工位号
+        ws.send(kkk[0]+"_g+"+0);     //kkk[0]是当前开关阀工位号
         document.getElementById(ii+"kc").style.backgroundColor='white'    //修改按钮的背景颜色
         document.getElementById(ii+"gc").style.backgroundColor='green'    //修改按钮的背景颜色
     }
