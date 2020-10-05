@@ -14,12 +14,9 @@
 
 <body onload="load();">
 <div style="margin-left:50px">
-    <h2>web上位机测试</h2>
-    <!--选择文件按钮-->
-    <input type='file' accept='text/plain' onchange='openFile(event)'><br>
 
-    <h4>收到的实时数据</h4>
-    <div style="border:1px solid;width: 1300px;height: 80px;">
+    <h4>实时数据</h4>
+    <div style="border:1px solid;width: 1300px;height: 40px;">
         <div id="msgArea" style="width:100%;height: 100%;overflow-y: scroll"></div>
     </div>
 
@@ -38,11 +35,17 @@
     <div style="border:1px solid;width: auto;height: auto;position:absolute;left: 600px;top: 350px;">
         <button id="kv6" onclick="pppkg()">kv6</button>
         <button id="kv7"  onclick="pppkg()">kv7</button>
+        <button id="kv8" onclick="pppkg()">kv8</button>
+        <button id="kv9"  onclick="pppkg()">kv9</button>
     </div>
+    
 
+    <!--模拟量-->
+    <!--模拟量-->
+    <!--模拟量-->
 
-    <h4>控制页面</h4>
-    <div id="te" style="border:1px solid;width: 600px;height: 350px;">
+    <h4>工艺流程</h4>
+    <div id="te" style="border:0px solid;width: 600px;height: 350px;">
         <p id="te3_c">春江花月夜</p>
         <p id="te3_f">春江花月夜</p>
         <p id="te4_c">春江花月夜</p>
@@ -60,16 +63,7 @@
 
         
     </div>
-    <h4>输入消息</h4>
-    <div style="border:1px solid;width: 600px;height: 50px;">
-        <div style="width:100%;height: 100%;">
-            <input id="userMsgpp" style="width:100%;height: 100%;text-align:start;resize: none;font-family: 微软雅黑;font-size: 20px;"></input>
-        </div>
-    </div>
-    <div style="border:1px solid;width: 600px;height: 25px;">
-        <button style="float: right;" onclick="sendMsg()">发送</button>
-    </div>
-    <h4>控制测试</h4>
+ 
     
 </div>
 
@@ -208,26 +202,15 @@
             var date = new Date();
             var msg = "<p>"+date.toLocaleString()+"</p>"+"<p>"+event.data+"</p>";
             $("#msgArea").append(msg);
-            //var arr3=event.data
-            var arr3=event.data.split("  ");    //分割符是两个空格
+            //s=event.data.replace("\"",""); //删除字符串开头的的引号
+            s=event.data.replace(/\"/g, "")  //删除字符串所有的引号
+            var arr3=s.split("  ");    //分割符是两个空格
+            
+            
             //arr3=event.data.split(" ");
             //arr3.shift()  //删除数组第一个元素
             
             //arr3.pop();   //删除数组最后一个元素
-            /*
-            document.getElementById("te1").innerHTML =arr3[0]
-            document.getElementById("te2").innerHTML =arr3[1]
-            document.getElementById("te3").innerHTML =arr3[2]
-            document.getElementById("te4").innerHTML =arr3[3]
-            document.getElementById("te5").innerHTML =arr3[4]
-            */
-
-            /*cars的数组长度代表需要显示的信号数量
-            for ( var i = 0; i <cars.length; i++){
-          
-                document.getElementById(cars[i]).innerHTML =arr3[i]      
-             }
-             */
 
              //cars的数组长度代表需要显示的信号数量
             //($('[id=te0]').length);      //获取同一个id的元素个数

@@ -11,13 +11,13 @@
     </style>
 </head>
 
-<body>
+<body onload="load();">
 <div style="margin-left:50px">
-    <h2>曲线显示</h2>
-    <input type='file' accept='text/plain' onchange='openFile(event)'><br>
+    <h2>曲线</h2>
+    
     <div id="output"></div>
-    <h4>收到的实时数据</h4>
-    <div style="border:1px solid;width: 1300px;height: 80px;">
+    <h4>实时数据</h4>
+    <div style="border:1px solid;width: 1300px;height: 40px;">
         <div id="msgArea" style="width:100%;height: 100%;overflow-y: scroll"></div>
     </div>
 
@@ -25,16 +25,38 @@
 
 <!-- 图表容器 DOM -->
 <div id="container" style="width: 400px; height: 300px;position:absolute;left: 50px;top: 200px;"></div>
-<div id="ccontainer" style="width: 400px; height: 300px;position:absolute;left: 500px;top: 200px;"></div>
 
+
+<div  style="width: 400px; height: 90px;position:absolute;left: 50px;top: 550px;">
+    <form action="/demo/demo_form.asp">
+		<input type="text" name="firstname" style="width: 400px; height: 30px" value="Mickey">
+	<br><br>
+	<input type="submit" value="确定">
+	</form>  
+</div>
+
+
+
+
+
+
+
+
+
+<div id="ccontainer" style="width: 400px; height: 300px;position:absolute;left: 500px;top: 200px;"></div>
+<input type="text" name="firstname" style="width: 400px; height: 30px;position:absolute;left: 500px;top: 550px;" value="Mickey">
 
 
 
 </body>
 
 </html>
+
+
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+
+
 <script>
 
 
@@ -43,22 +65,6 @@
     
     //th数组存储配置文件里面的工位号
     var th=new Array();
-
-   
-	
-//取TXT格式的配置文件
-    var openFile = function(event) {
-            var input = event.target;
-            var reader = new FileReader();
-            reader.onload = function() {
-                if(reader.result) {
-                    
-                    th=reader.result.split("\r\n");    //将读取的txt文本文件按换行符分割成数组
-                
-                }
-            };
-            reader.readAsText(input.files[0]);
-        };
 
 
 //从web服务器获取数据
@@ -71,17 +77,19 @@
         
         ws.onopen = function(event){
             
-            alert('连接了');
+            //alert('连接了');
         };
         ws.onmessage = function (event) {     //接收到数据
             $('#msgArea').empty();//jQuery
             
             var date = new Date();
             var msg = "<p>"+date.toLocaleString()+"</p>"+"<p>"+event.data+"</p>";
-            $("#msgArea").append(msg);
-            window.arr3=event.data.split(" ");
-      
-			window.arr3.shift()  //删除数组第一个元素
+			$("#msgArea").append(msg);
+			
+			s=event.data.replace(/\"/g, "")  //删除字符串所有的引号
+            window.arr3=s.split("  ");    //分割符是两个空格
+            //alert(arr3[1]);
+			//window.arr3.shift()  //删除数组第一个元素
           
 
 			
@@ -117,9 +125,9 @@ var chart = Highcharts.chart('container', {
 						y = Math.random(),
 						y1 = Math.random();
                
-					series[0].addPoint([x, parseFloat(window.arr3[1])], false, true);
-					series[1].addPoint([x, parseFloat(window.arr3[2])], false, true);
-					series[2].addPoint([x, parseFloat(window.arr3[3])], true, true);
+					series[0].addPoint([x, parseFloat(window.arr3[0])], false, true);
+					series[1].addPoint([x, parseFloat(window.arr3[1])], false, true);
+					series[2].addPoint([x, parseFloat(window.arr3[2])], true, true);
 					
 				}, 1000);
 			}
@@ -132,7 +140,7 @@ var chart = Highcharts.chart('container', {
 
 
 		title: {
-			text: '动态模拟实时数据'
+			text: '温度'
 		},
 		xAxis: {
 			type: 'datetime',
@@ -167,8 +175,8 @@ var chart = Highcharts.chart('container', {
 		exporting: {        enabled: false
 				   },    
 		series: [{
-			name: 'PM2.5',
-			data: (function () {
+			        name: 'PM2.5',
+			        data: (function () {
 				// 生成随机值
 				var data = [],
 					time = (new Date()).getTime(),
@@ -181,7 +189,7 @@ var chart = Highcharts.chart('container', {
 				}
 				return data;
 			}())
-		},
+		        },
 				 {
 					 name: 'PM10',
 					 data: (function () {
@@ -239,9 +247,9 @@ var chart = Highcharts.chart('ccontainer', {
 						y = Math.random(),
 						y1 = Math.random();
                
-					series[0].addPoint([x, parseFloat(window.arr3[1])], false, true);
-					series[1].addPoint([x, parseFloat(window.arr3[2])], false, true);
-					series[2].addPoint([x, parseFloat(window.arr3[3])], true, true);
+					series[0].addPoint([x, parseFloat(window.arr3[0])], false, true);
+					series[1].addPoint([x, parseFloat(window.arr3[1])], false, true);
+					series[2].addPoint([x, parseFloat(window.arr3[2])], true, true);
 					
 				}, 1000);
 			}
@@ -289,8 +297,8 @@ var chart = Highcharts.chart('ccontainer', {
 		exporting: {        enabled: false
 				   },    
 		series: [{
-			name: 'PM2.5',
-			data: (function () {
+			        name: 'PM2.5',
+			        data: (function () {
 				// 生成随机值
 				var data = [],
 					time = (new Date()).getTime(),
@@ -303,10 +311,10 @@ var chart = Highcharts.chart('ccontainer', {
 				}
 				return data;
 			}())
-		},
+		         },
 				 {
-					 name: 'PM10',
-					 data: (function () {
+					name: 'PM10',
+					data: (function () {
 						 // 生成随机值
 						 var data = [],
 							 time = (new Date()).getTime(),
@@ -322,8 +330,8 @@ var chart = Highcharts.chart('ccontainer', {
 				 },
 
 				 {
-					 name: 'PM110',
-					 data: (function () {
+					name: 'PM110',
+					data: (function () {
 						 // 生成随机值
 						 var data = [],
 							 time = (new Date()).getTime(),
@@ -342,5 +350,34 @@ var chart = Highcharts.chart('ccontainer', {
 				 ]
 	});
 
+
+//请求读取服务器配置表
+
+	function load() {
+        
+        var xmlhttp;
+	    if (window.XMLHttpRequest)
+	        {
+		        //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+		        xmlhttp=new XMLHttpRequest();
+	        }
+	       else
+	        {
+		        // IE6, IE5 浏览器执行代码
+		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	        }
+	        xmlhttp.onreadystatechange=function()
+	        {
+		    if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		        {
+			        //alert(xmlhttp.responseText);
+                    th=xmlhttp.responseText.split("\r\n");    //将读取的txt文本文件按换行符分割成数组
+                    //alert("自动读取服务器信号表完成");
+		        }
+	        }
+	        xmlhttp.open("GET","http://192.168.1.9:8000/txt",true);
+	        xmlhttp.send();
+
+			};
 
 	</script>
